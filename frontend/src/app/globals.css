@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-surface text-gray-900;
+}
+
+/* 숫자 정렬용 - 재무/가격 테이블에서 사용 (요구사항 60: 숫자 Alignment) */
+.tabular-num {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}

@@ -1,0 +1,202 @@
+{
+  "common": {
+    "appName": "Korea Stock AI Analysis Platform",
+    "search": "Search Company",
+    "searchButton": "Search",
+    "searchPlaceholder": "Enter a company name or ticker (e.g. Samsung Electronics, 005930)",
+    "loading": "Loading...",
+    "noData": "No data",
+    "notAvailable": "N/A",
+    "estimated": "estimated",
+    "comingSoon": "Coming in a future development phase.",
+    "error": "An error occurred.",
+    "retry": "Retry"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "watchlist": "Watchlist",
+    "analysisLab": "Analysis Lab",
+    "simulationLab": "Market Simulation Lab",
+    "about": "About"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "recentImportantNews": "Recent Important News",
+    "recentlyAnalyzed": "Recently Analyzed Companies",
+    "marketSummary": "Market Summary",
+    "myWatchlist": "My Watchlist"
+  },
+  "company": {
+    "market": "Market",
+    "sector": "Sector",
+    "marketCap": "Market Cap",
+    "simpleView": "Simple View",
+    "proView": "Pro View",
+    "priceChart": "Price Chart",
+    "news": "Recent News",
+    "fundamentals": "Fundamental Analysis",
+    "historicalSimilarity": "Historical Similarity",
+    "aiPrediction": "AI Future Analysis",
+    "dcf": "DCF Calculator",
+    "classificationPending": "Classification pending"
+  },
+  "classification": {
+    "title": "Industry Classification",
+    "investmentIndustry": "Investment Industry",
+    "system": "Classification System",
+    "source": "Source",
+    "updatedAt": "Last Updated",
+    "confidence": "Confidence",
+    "rawIndustry": "Raw Industry (KRX/KSIC)",
+    "rawNote": "May differ from actual business for diversified conglomerates; not used for investment analysis.",
+    "unknown": "Classification pending"
+  },
+  "periods": {
+    "1D": "1D", "5D": "5D", "1M": "1M", "3M": "3M",
+    "6M": "6M", "1Y": "1Y", "5Y": "5Y", "MAX": "MAX"
+  },
+  "valuation": {
+    "title": "Valuation",
+    "per": "PER", "forwardPer": "Forward PER", "pbr": "PBR", "psr": "PSR",
+    "evEbitda": "EV/EBITDA", "peg": "PEG", "fcfYield": "FCF Yield", "earningsYield": "Earnings Yield"
+  },
+  "profitability": {
+    "title": "Profitability",
+    "roe": "ROE", "roa": "ROA", "roic": "ROIC",
+    "grossMargin": "Gross Margin", "operatingMargin": "Operating Margin", "netMargin": "Net Margin", "fcfMargin": "FCF Margin"
+  },
+  "growth": {
+    "title": "Growth",
+    "revenueGrowthYoy": "Revenue Growth (YoY)", "epsGrowthYoy": "EPS Growth (YoY)",
+    "operatingIncomeGrowthYoy": "Operating Income Growth (YoY)", "fcfGrowthYoy": "FCF Growth (YoY)"
+  },
+  "financialHealth": {
+    "title": "Financial Health",
+    "debtEquity": "Debt/Equity", "netDebt": "Net Debt", "netDebtEbitda": "Net Debt/EBITDA",
+    "currentRatio": "Current Ratio", "quickRatio": "Quick Ratio", "interestCoverage": "Interest Coverage"
+  },
+  "simpleView": {
+    "priceLevel": "Price Level",
+    "growth": "Growth",
+    "profitability": "Profitability",
+    "financialHealth": "Financial Health",
+    "newsSentiment": "Recent News Sentiment",
+    "historicalSimilarity": "Historical Similar Cases",
+    "aiOutlook": "AI Outlook",
+    "riskFactors": "Key Risk Factors",
+    "whyThisAssessment": "Why this assessment?"
+  },
+  "glossary": {
+    "lowLabel": "If low",
+    "highLabel": "If high",
+    "per": "A measure of how high the current stock price is relative to earnings. Usually compared within the same industry.",
+    "perLow": "A low PER means the stock is cheap relative to earnings — it can signal undervaluation, or that the market expects limited future growth.",
+    "perHigh": "A high PER means the stock is expensive relative to earnings — it can signal strong growth expectations, or potential overvaluation.",
+    "pbr": "A measure of how high the stock price is relative to the company's net assets (equity).",
+    "pbrLow": "A low PBR means the stock trades near or below its net asset value — it can signal undervaluation, or market doubt about the quality of those assets.",
+    "pbrHigh": "A high PBR means the market values the company well above its book value, often reflecting high profitability (ROE) or strong growth expectations.",
+    "roe": "Shows how efficiently a company generates profit from shareholders' invested capital.",
+    "roeLow": "A low ROE means the company is less efficient at generating profit from shareholders' equity.",
+    "roeHigh": "A high ROE means the company generates profit efficiently from equity — though it can also result from heavy use of debt, so check it alongside the debt ratio.",
+    "roa": "Shows how efficiently a company generates profit from its total assets.",
+    "roaLow": "A low ROA means the company is less efficient at generating profit from its total assets.",
+    "roaHigh": "A high ROA means the company generates profit efficiently from its total assets.",
+    "dcf": "A method of estimating company value by discounting expected future cash flows to present value.",
+    "debtEquity": "Shows how much debt a company carries relative to its own equity.",
+    "debtEquityLow": "A low debt/equity ratio means the company relies less on debt, generally a more conservative, stable financial structure.",
+    "debtEquityHigh": "A high debt/equity ratio means the company relies more on debt, which can mean a higher interest burden and greater financial risk in a downturn.",
+    "evEbitda": "Shows how many times EBITDA the company's total enterprise value (EV) represents.",
+    "evEbitdaLow": "A low EV/EBITDA means the enterprise value is cheap relative to operating cash earnings — it can signal undervaluation or muted growth expectations.",
+    "evEbitdaHigh": "A high EV/EBITDA means the enterprise value is rich relative to operating cash earnings — it can reflect strong growth expectations or potential overvaluation.",
+    "psr": "Shows how high the market cap is relative to revenue. Often used to value growth companies that aren't profitable yet.",
+    "psrLow": "A low PSR means the market cap is cheap relative to revenue — common for undervalued stocks or low-margin, mature businesses.",
+    "psrHigh": "A high PSR means the market cap is rich relative to revenue, often reflecting strong growth expectations or future margin improvement.",
+    "operatingMargin": "The share of revenue left as profit from core operations. Higher means the company earns more efficiently from its main business.",
+    "operatingMarginLow": "A low operating margin means a smaller share of revenue is left as core-business profit, which can reflect competitive pressure or rising costs.",
+    "operatingMarginHigh": "A high operating margin means the company earns efficiently from its core business, reflecting pricing power or cost advantages.",
+    "netMargin": "The share of revenue left as final profit after all costs, taxes, and interest.",
+    "netMarginLow": "A low net margin means less of each dollar of revenue converts into final profit.",
+    "netMarginHigh": "A high net margin means more of each dollar of revenue converts into final profit.",
+    "revenueGrowthYoy": "How much revenue grew compared to the same period last year (Year-over-Year).",
+    "revenueGrowthYoyLow": "Low or negative revenue growth means sales are stagnating or shrinking compared to the prior year.",
+    "revenueGrowthYoyHigh": "High revenue growth means sales are expanding quickly compared to the prior year — worth checking whether that pace is sustainable.",
+    "currentRatio": "Current assets (convertible to cash within a year) relative to current liabilities (due within a year). Higher means stronger short-term solvency.",
+    "currentRatioLow": "A low current ratio (especially below 100%) means the company may have limited cash-convertible assets versus obligations due within a year — a possible short-term liquidity concern.",
+    "currentRatioHigh": "A high current ratio means strong short-term solvency, though an excessively high ratio can also signal idle cash or inventory not being used efficiently.",
+    "interestCoverage": "How many times operating income covers interest expense. Lower means less room to pay interest.",
+    "interestCoverageLow": "A low interest coverage ratio means operating income leaves little room to cover interest expense — the lower it is (e.g. below 1x), the greater the financial risk.",
+    "interestCoverageHigh": "A high interest coverage ratio means operating income comfortably exceeds interest expense, indicating ample room to service debt."
+  },
+  "news": {
+    "sentimentPositive": "Positive",
+    "sentimentNeutral": "Neutral",
+    "sentimentNegative": "Negative",
+    "originalLink": "View Original",
+    "providerUnavailable": "Some news providers are unavailable",
+    "relatedCoverage": "Related coverage:"
+  },
+  "dcfPage": {
+    "revenueGrowth": "Revenue Growth", "operatingMargin": "Operating Margin", "taxRate": "Tax Rate",
+    "capexPctRevenue": "Capex (% of Revenue)", "workingCapitalPctRevenue": "Working Capital (% of Revenue)",
+    "wacc": "WACC", "terminalGrowthRate": "Terminal Growth Rate",
+    "enterpriseValue": "Estimated Enterprise Value", "equityValue": "Estimated Equity Value",
+    "pricePerShare": "Estimated Price/Share", "currentPrice": "Current Price", "upside": "Upside/Downside",
+    "runDcf": "Run DCF"
+  },
+  "watchlistPage": {
+    "title": "Watchlist",
+    "add": "Add to Watchlist",
+    "remove": "Remove",
+    "empty": "Your watchlist is empty. Search for a company to add one."
+  },
+  "analysisLabPage": {
+    "title": "Analysis Lab",
+    "description": "Combine features, models, and time ranges to run your own analysis.",
+    "target": "Prediction Target", "features": "Feature Selection", "lags": "Lag", "model": "Model", "run": "Run Analysis"
+  },
+  "simulationLabPage": {
+    "title": "Market Simulation Lab",
+    "description": "Adjust investor persona mix to experiment with simulated market reactions (mock results).",
+    "run": "Run Simulation"
+  },
+  "aboutPage": {
+    "title": "About & Methodology",
+    "philosophy": "This platform does not claim that \"AI can accurately predict future stock prices.\" Its goal is to support probabilistic judgment of future market reactions using historical cases, statistics, and machine learning."
+  },
+  "peerComparison": {
+    "title": "Peer Comparison",
+    "discountPremium": "vs. Industry Median",
+    "noPeers": "Not enough companies in the same sector to compare against.",
+    "interpretationTitle": "Interpretation vs. Peers",
+    "higherThanPeers": "Higher than peers",
+    "lowerThanPeers": "Lower than peers",
+    "similarToPeers": "Similar to peers"
+  },
+  "searchPage": {
+    "title": "Search Results",
+    "noResults": "No results found."
+  },
+  "eventStudy": {
+    "show": "View Event Study (price reaction analysis)",
+    "hide": "Hide",
+    "tradingDaysAxis": "Trading days relative to event date (D0)",
+    "returnLabel": "Cumulative return",
+    "insufficientData": "Not enough time has passed since the event to compute a price reaction yet.",
+    "noEvent": "No event information could be extracted from this news, so analysis is unavailable.",
+    "excessReturnNote": "Excess return vs. sector index",
+    "excessReturn5d": "5-day:",
+    "disclaimer": "Based on historical data; does not guarantee the same pattern will repeat."
+  },
+  "aiQa": {
+    "title": "Ask AI",
+    "subtitle": "Answers are based on this stock's actual price/financial/news data.",
+    "placeholder": "e.g. What's this company's debt ratio?",
+    "send": "Send",
+    "emptyHint": "Ask anything about this stock.",
+    "thinking": "AI is generating an answer...",
+    "unavailable": "The administrator has not configured the AI Q&A feature (Anthropic API Key) yet.",
+    "errorGeneric": "Failed to get an answer. Please try again in a moment.",
+    "disclaimer": "This answer was generated by AI based on the provided data and is not investment advice."
+  },
+  "disclaimer": "This analysis is not investment advice and does not guarantee investment outcomes."
+}

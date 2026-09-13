@@ -1,0 +1,202 @@
+{
+  "common": {
+    "appName": "韓国株式AI分析プラットフォーム",
+    "search": "企業検索",
+    "searchButton": "検索",
+    "searchPlaceholder": "企業名または銘柄コードを入力してください (例: サムスン電子, 005930)",
+    "loading": "読み込み中...",
+    "noData": "データなし",
+    "notAvailable": "N/A",
+    "estimated": "推定",
+    "comingSoon": "次の開発フェーズで提供予定です。",
+    "error": "エラーが発生しました。",
+    "retry": "再試行"
+  },
+  "nav": {
+    "dashboard": "ダッシュボード",
+    "watchlist": "ウォッチリスト",
+    "analysisLab": "Analysis Lab",
+    "simulationLab": "Market Simulation Lab",
+    "about": "紹介"
+  },
+  "dashboard": {
+    "title": "ダッシュボード",
+    "recentImportantNews": "最近の重要ニュース",
+    "recentlyAnalyzed": "最近分析した企業",
+    "marketSummary": "市場サマリー",
+    "myWatchlist": "マイウォッチリスト"
+  },
+  "company": {
+    "market": "市場",
+    "sector": "業種",
+    "marketCap": "時価総額",
+    "simpleView": "Simple View",
+    "proView": "Pro View",
+    "priceChart": "株価チャート",
+    "news": "最新ニュース",
+    "fundamentals": "財務分析",
+    "historicalSimilarity": "過去の類似事例",
+    "aiPrediction": "AI将来分析",
+    "dcf": "DCF計算機",
+    "classificationPending": "分類情報確認中"
+  },
+  "classification": {
+    "title": "業種分類情報",
+    "investmentIndustry": "投資業種",
+    "system": "分類体系",
+    "source": "出典",
+    "updatedAt": "最終更新",
+    "confidence": "信頼度",
+    "rawIndustry": "元の産業分類(KRX/KSIC基準)",
+    "rawNote": "多角化した大企業などは実際の事業と異なる場合があり、投資分析には使用しません。",
+    "unknown": "分類情報確認中"
+  },
+  "periods": {
+    "1D": "1日", "5D": "5日", "1M": "1ヶ月", "3M": "3ヶ月",
+    "6M": "6ヶ月", "1Y": "1年", "5Y": "5年", "MAX": "全期間"
+  },
+  "valuation": {
+    "title": "バリュエーション",
+    "per": "PER", "forwardPer": "予想PER", "pbr": "PBR", "psr": "PSR",
+    "evEbitda": "EV/EBITDA", "peg": "PEG", "fcfYield": "FCF利回り", "earningsYield": "益利回り"
+  },
+  "profitability": {
+    "title": "収益性",
+    "roe": "ROE", "roa": "ROA", "roic": "ROIC",
+    "grossMargin": "売上総利益率", "operatingMargin": "営業利益率", "netMargin": "純利益率", "fcfMargin": "FCFマージン"
+  },
+  "growth": {
+    "title": "成長性",
+    "revenueGrowthYoy": "売上成長率(前年比)", "epsGrowthYoy": "EPS成長率(前年比)",
+    "operatingIncomeGrowthYoy": "営業利益成長率(前年比)", "fcfGrowthYoy": "FCF成長率(前年比)"
+  },
+  "financialHealth": {
+    "title": "財務安定性",
+    "debtEquity": "負債比率", "netDebt": "純有利子負債", "netDebtEbitda": "純有利子負債/EBITDA",
+    "currentRatio": "流動比率", "quickRatio": "当座比率", "interestCoverage": "インタレスト・カバレッジ・レシオ"
+  },
+  "simpleView": {
+    "priceLevel": "価格水準",
+    "growth": "成長性",
+    "profitability": "収益性",
+    "financialHealth": "財務安定性",
+    "newsSentiment": "最近のニュースの雰囲気",
+    "historicalSimilarity": "過去の類似事例の反応",
+    "aiOutlook": "AI見通し",
+    "riskFactors": "主なリスク要因",
+    "whyThisAssessment": "なぜこの評価なのか?"
+  },
+  "glossary": {
+    "lowLabel": "低い場合",
+    "highLabel": "高い場合",
+    "per": "企業の現在の株価が利益に対してどれくらい高いかを見る指標です。同業他社と比較するのが一般的です。",
+    "perLow": "PERが低いということは、利益に比べて株価が割安に評価されていることを意味し、割安のサインであるか、市場が将来の成長を保守的に見ている可能性を示唆します。",
+    "perHigh": "PERが高いということは、利益に比べて株価が割高に評価されていることを意味し、市場が高い成長を期待しているか、割高な状態である可能性を示唆します。",
+    "pbr": "株価が企業の純資産(資本)に対してどれくらい高いかを見る指標です。",
+    "pbrLow": "PBRが低いということは、株価が純資産価値に近いか、それを下回って取引されていることを意味し、割安のサインであるか、資産の収益性に対する市場の懸念を反映している場合があります。",
+    "pbrHigh": "PBRが高いということは、市場が純資産価値を大きく上回る価値を認めていることを意味し、高い収益性(ROE)や成長期待が反映されている場合が多いです。",
+    "roe": "株主が投資した資本で企業がどれだけ効率的に利益を出したかを示します。",
+    "roeLow": "ROEが低いということは、株主資本を活用して利益を生み出す効率が低いことを意味します。",
+    "roeHigh": "ROEが高いということは、自己資本を効率的に活用して高い利益を生み出していることを意味しますが、負債を多く活用した結果である場合もあるため、負債比率と合わせて確認することをおすすめします。",
+    "roa": "企業が保有する全資産でどれだけ効率的に利益を出したかを示します。",
+    "roaLow": "ROAが低いということは、保有する全資産を活用して利益を生み出す効率が低いことを意味します。",
+    "roaHigh": "ROAが高いということは、保有資産を効率的に活用して高い利益を生み出していることを意味します。",
+    "dcf": "企業が将来生み出すと予想されるキャッシュフローを現在価値に換算して企業価値を推定する方法です。",
+    "debtEquity": "企業が自己資本に対してどれだけ多くの負債を抱えているかを示す指標です。",
+    "debtEquityLow": "負債比率が低いということは、自己資本に比べて負債が少なく、財務構造が比較的安定していることを意味します。",
+    "debtEquityHigh": "負債比率が高いということは、自己資本に比べて負債が多く、利息負担や景気悪化時の財務リスクが大きくなる可能性があることを意味します。",
+    "evEbitda": "企業全体の価値(EV)がEBITDAの何倍かを示す指標です。",
+    "evEbitdaLow": "EV/EBITDAが低いということは、営業キャッシュフローに比べて企業価値が割安に評価されていることを意味し、割安のサインであるか、成長性が低く見られていることを示す場合があります。",
+    "evEbitdaHigh": "EV/EBITDAが高いということは、営業キャッシュフローに比べて企業価値が高く評価されていることを意味し、高い成長期待が反映されているか、割高な状態である可能性があります。",
+    "psr": "時価総額が売上高に比べてどれくらい高いかを見る指標です。まだ利益を出せていない成長企業の評価によく使われます。",
+    "psrLow": "PSRが低いということは、売上高に比べて時価総額が割安であることを意味し、割安のサインであるか、まだ収益性の低い業種・企業でよく見られます。",
+    "psrHigh": "PSRが高いということは、売上高に比べて時価総額が高く評価されていることを意味し、高い成長性や将来の収益性改善への期待が反映されている場合が多いです。",
+    "operatingMargin": "売上高のうち本業で残した利益の割合です。高いほど本業でうまく稼いでいることを意味します。",
+    "operatingMarginLow": "営業利益率が低いということは、本業で残す利益の割合が小さいことを意味し、競争の激化や原価負担を示唆する場合があります。",
+    "operatingMarginHigh": "営業利益率が高いということは、本業で効率的に利益を上げていることを意味し、価格競争力や原価優位性を反映している場合があります。",
+    "netMargin": "売上高のうち税金や利息などをすべて差し引いて最終的に残した純利益の割合です。",
+    "netMarginLow": "純利益率が低いということは、売上高に対して最終的に残る利益が少ないことを意味します。",
+    "netMarginHigh": "純利益率が高いということは、売上高に対して最終的に残る利益が多いことを意味します。",
+    "revenueGrowthYoy": "前年同期に比べて売上高がどれだけ伸びたか(前年同期比)を示します。",
+    "revenueGrowthYoyLow": "売上成長率が低い、またはマイナスであるということは、前年に比べて売上が停滞または減少していることを意味します。",
+    "revenueGrowthYoyHigh": "売上成長率が高いということは、前年に比べて売上が急速に伸びていることを意味しますが、その成長が持続可能かどうかも合わせて確認する必要があります。",
+    "currentRatio": "1年以内に返済すべき負債(流動負債)に対する、1年以内に現金化できる資産(流動資産)の比率です。高いほど短期支払い能力が安定しています。",
+    "currentRatioLow": "流動比率が低い(特に100%未満)ということは、1年以内に返済すべき負債に対して現金化可能な資産が不足しており、短期的な資金繰りが厳しい可能性があることを意味します。",
+    "currentRatioHigh": "流動比率が高いということは短期支払い能力が安定していることを意味しますが、高すぎる場合は現金や在庫などの資産を効率的に活用できていないサインである可能性もあります。",
+    "interestCoverage": "営業利益が支払利息の何倍かを示します。低いほど利息を支払う余力が乏しいことを意味します。",
+    "interestCoverageLow": "インタレスト・カバレッジ・レシオが低いということは、営業利益で利息費用を賄う余力が乏しいことを意味し、低いほど(1倍未満など)財務リスクが高まります。",
+    "interestCoverageHigh": "インタレスト・カバレッジ・レシオが高いということは、営業利益が利息費用を大きく上回っており、利息支払いの余力が十分であることを意味します。"
+  },
+  "news": {
+    "sentimentPositive": "ポジティブ",
+    "sentimentNeutral": "中立",
+    "sentimentNegative": "ネガティブ",
+    "originalLink": "元記事を見る",
+    "providerUnavailable": "一部のニュースプロバイダーが利用できません",
+    "relatedCoverage": "関連報道"
+  },
+  "dcfPage": {
+    "revenueGrowth": "売上成長率", "operatingMargin": "営業利益率", "taxRate": "法人税率",
+    "capexPctRevenue": "売上高対Capex比率", "workingCapitalPctRevenue": "売上高対運転資本比率",
+    "wacc": "WACC", "terminalGrowthRate": "永久成長率",
+    "enterpriseValue": "推定企業価値(EV)", "equityValue": "推定株主資本価値",
+    "pricePerShare": "推定一株当たり価値", "currentPrice": "現在価格", "upside": "上昇/下落余地",
+    "runDcf": "DCF計算を実行"
+  },
+  "watchlistPage": {
+    "title": "ウォッチリスト",
+    "add": "ウォッチリストに追加",
+    "remove": "削除",
+    "empty": "ウォッチリストが空です。企業を検索して追加してください。"
+  },
+  "analysisLabPage": {
+    "title": "Analysis Lab",
+    "description": "Feature・モデル・期間を自由に組み合わせて分析を実行できます。",
+    "target": "予測対象", "features": "Feature選択", "lags": "Lag", "model": "モデル", "run": "分析実行"
+  },
+  "simulationLabPage": {
+    "title": "Market Simulation Lab",
+    "description": "投資家ペルソナの構成比を調整して人工市場の反応を実験できます(Mock結果)。",
+    "run": "シミュレーション実行"
+  },
+  "aboutPage": {
+    "title": "紹介 & Methodology",
+    "philosophy": "本プラットフォームは「AIが将来の株価を正確に予測する」とは主張しません。過去の事例と統計、機械学習を用いて、今後の市場反応を確率的に判断できるよう支援することを目標としています。"
+  },
+  "peerComparison": {
+    "title": "同業他社比較 (Peer Comparison)",
+    "discountPremium": "業種Median比",
+    "noPeers": "同じ業種に分類された比較対象企業が不足しています。",
+    "interpretationTitle": "同業他社比較の解釈",
+    "higherThanPeers": "同業他社より高い",
+    "lowerThanPeers": "同業他社より低い",
+    "similarToPeers": "同業他社と同程度"
+  },
+  "searchPage": {
+    "title": "検索結果",
+    "noResults": "検索結果がありません。"
+  },
+  "eventStudy": {
+    "show": "イベントスタディを見る(株価反応分析)",
+    "hide": "閉じる",
+    "tradingDaysAxis": "イベント発生日(D0)基準の取引日",
+    "returnLabel": "累積リターン",
+    "insufficientData": "イベント発生からの経過日数が短く、まだ株価反応データが不足しています。",
+    "noEvent": "このニュースから抽出されたEvent情報がないため分析できません。",
+    "excessReturnNote": "業種指数対比超過収益率",
+    "excessReturn5d": "5日:",
+    "disclaimer": "過去の事例に基づく分析であり、今後同じパターンを保証するものではありません。"
+  },
+  "aiQa": {
+    "title": "AIに質問する",
+    "subtitle": "この銘柄の実際の価格・財務・ニュースデータを参考に回答します。",
+    "placeholder": "例: この会社の負債比率は?",
+    "send": "送信",
+    "emptyHint": "この銘柄について気になることを質問してください。",
+    "thinking": "AIが回答を生成しています...",
+    "unavailable": "管理者がまだAI質問応答機能(Anthropic APIキー)を設定していません。",
+    "errorGeneric": "回答を取得できませんでした。しばらくしてからもう一度お試しください。",
+    "disclaimer": "この回答は提供されたデータに基づきAIが生成したものであり、投資助言ではありません。"
+  },
+  "disclaimer": "本分析は投資勧誘ではなく、投資結果を保証するものではありません。"
+}

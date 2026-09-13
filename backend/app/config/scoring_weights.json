@@ -1,0 +1,29 @@
+{
+  "version": "2026.09.1",
+  "category_weights": {
+    "valuation": 0.25,
+    "growth": 0.25,
+    "profitability": 0.25,
+    "financial_health": 0.25
+  },
+  "valuation_component_weights": {
+    "per": 0.4,
+    "pbr": 0.3,
+    "ev_ebitda": 0.3
+  },
+  "growth_component_weights": {
+    "revenue_growth_yoy": 0.4,
+    "eps_growth_yoy": 0.4,
+    "operating_income_growth_yoy": 0.2
+  },
+  "profitability_component_weights": {
+    "roe": 0.4,
+    "operating_margin": 0.3,
+    "net_margin": 0.3
+  },
+  "financial_health_component_weights": {
+    "debt_equity": 0.4,
+    "current_ratio": 0.3,
+    "interest_coverage": 0.3
+  }
+}

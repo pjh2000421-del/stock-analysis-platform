@@ -1,0 +1,202 @@
+{
+  "common": {
+    "appName": "한국 주식 AI 분석 플랫폼",
+    "search": "기업 검색",
+    "searchButton": "검색",
+    "searchPlaceholder": "기업명 또는 종목코드를 입력하세요 (예: 삼성전자, 005930)",
+    "loading": "불러오는 중...",
+    "noData": "데이터 없음",
+    "notAvailable": "N/A",
+    "estimated": "추정",
+    "comingSoon": "다음 개발 단계에서 제공될 예정입니다.",
+    "error": "오류가 발생했습니다.",
+    "retry": "다시 시도"
+  },
+  "nav": {
+    "dashboard": "대시보드",
+    "watchlist": "관심기업",
+    "analysisLab": "Analysis Lab",
+    "simulationLab": "Market Simulation Lab",
+    "about": "소개"
+  },
+  "dashboard": {
+    "title": "대시보드",
+    "recentImportantNews": "최근 중요 뉴스",
+    "recentlyAnalyzed": "최근 분석한 기업",
+    "marketSummary": "시장 요약",
+    "myWatchlist": "내 관심기업"
+  },
+  "company": {
+    "market": "시장",
+    "sector": "업종",
+    "marketCap": "시가총액",
+    "simpleView": "Simple View",
+    "proView": "Pro View",
+    "priceChart": "주가 차트",
+    "news": "최근 뉴스",
+    "fundamentals": "재무 분석",
+    "historicalSimilarity": "과거 유사 사례",
+    "aiPrediction": "AI 미래 분석",
+    "dcf": "DCF 계산기",
+    "classificationPending": "분류 정보 확인 중"
+  },
+  "classification": {
+    "title": "업종 분류 정보",
+    "investmentIndustry": "투자 업종",
+    "system": "분류체계",
+    "source": "출처",
+    "updatedAt": "마지막 업데이트",
+    "confidence": "신뢰도",
+    "rawIndustry": "원본 산업분류(KRX/KSIC 기준)",
+    "rawNote": "겸업 대기업 등은 실제 사업과 다를 수 있어 투자분석에는 사용하지 않습니다.",
+    "unknown": "분류 정보 확인 중"
+  },
+  "periods": {
+    "1D": "1일", "5D": "5일", "1M": "1개월", "3M": "3개월",
+    "6M": "6개월", "1Y": "1년", "5Y": "5년", "MAX": "전체"
+  },
+  "valuation": {
+    "title": "Valuation",
+    "per": "PER", "forwardPer": "Forward PER", "pbr": "PBR", "psr": "PSR",
+    "evEbitda": "EV/EBITDA", "peg": "PEG", "fcfYield": "FCF Yield", "earningsYield": "Earnings Yield"
+  },
+  "profitability": {
+    "title": "수익성",
+    "roe": "ROE", "roa": "ROA", "roic": "ROIC",
+    "grossMargin": "매출총이익률", "operatingMargin": "영업이익률", "netMargin": "순이익률", "fcfMargin": "FCF 마진"
+  },
+  "growth": {
+    "title": "성장성",
+    "revenueGrowthYoy": "매출 성장률(YoY)", "epsGrowthYoy": "EPS 성장률(YoY)",
+    "operatingIncomeGrowthYoy": "영업이익 성장률(YoY)", "fcfGrowthYoy": "FCF 성장률(YoY)"
+  },
+  "financialHealth": {
+    "title": "재무 안정성",
+    "debtEquity": "부채비율", "netDebt": "순차입금", "netDebtEbitda": "순차입금/EBITDA",
+    "currentRatio": "유동비율", "quickRatio": "당좌비율", "interestCoverage": "이자보상배율"
+  },
+  "simpleView": {
+    "priceLevel": "가격 수준",
+    "growth": "성장성",
+    "profitability": "수익성",
+    "financialHealth": "재무 안정성",
+    "newsSentiment": "최근 뉴스 분위기",
+    "historicalSimilarity": "과거 유사 사례 반응",
+    "aiOutlook": "AI 전망",
+    "riskFactors": "주요 위험요인",
+    "whyThisAssessment": "왜 이런 평가인가?"
+  },
+  "glossary": {
+    "lowLabel": "낮으면",
+    "highLabel": "높으면",
+    "per": "기업의 현재 주가가 이익에 비해 얼마나 높은지 보는 지표입니다. 같은 업종 기업끼리 비교하는 것이 일반적입니다.",
+    "perLow": "PER이 낮다는 것은 이익 대비 주가가 저렴하게 평가되고 있다는 의미로, 저평가 신호이거나 시장이 향후 성장을 보수적으로 보고 있다는 뜻일 수 있습니다.",
+    "perHigh": "PER이 높다는 것은 이익 대비 주가가 비싸게 평가되고 있다는 의미로, 시장이 높은 성장을 기대하고 있거나 고평가 상태일 수 있다는 신호입니다.",
+    "pbr": "주가가 기업의 순자산(자본)에 비해 얼마나 높은지 보는 지표입니다.",
+    "pbrLow": "PBR이 낮다는 것은 주가가 순자산가치에 가깝거나 그보다 낮게 거래된다는 의미로, 저평가 신호이거나 자산의 수익성에 대한 시장의 의구심을 반영할 수 있습니다.",
+    "pbrHigh": "PBR이 높다는 것은 시장이 순자산가치보다 훨씬 높은 가치를 인정하고 있다는 의미로, 높은 수익성(ROE)이나 성장 기대가 반영된 경우가 많습니다.",
+    "roe": "주주가 투자한 자본으로 기업이 얼마나 효율적으로 이익을 냈는지를 나타냅니다.",
+    "roeLow": "ROE가 낮다는 것은 주주 자본을 활용해 이익을 내는 효율이 낮다는 의미입니다.",
+    "roeHigh": "ROE가 높다는 것은 자기자본을 효율적으로 활용해 높은 이익을 내고 있다는 의미이지만, 부채를 많이 활용한 결과일 수도 있어 부채비율과 함께 확인하는 것이 좋습니다.",
+    "roa": "기업이 보유한 전체 자산으로 얼마나 효율적으로 이익을 냈는지를 나타냅니다.",
+    "roaLow": "ROA가 낮다는 것은 보유 자산 전체를 활용해 이익을 내는 효율이 낮다는 의미입니다.",
+    "roaHigh": "ROA가 높다는 것은 보유 자산을 효율적으로 활용해 높은 이익을 내고 있다는 의미입니다.",
+    "dcf": "기업이 미래에 벌 것으로 예상되는 현금을 현재 가치로 환산하여 기업가치를 추정하는 방법입니다.",
+    "debtEquity": "기업이 자기자본 대비 얼마나 많은 빚을 지고 있는지 보여주는 지표입니다.",
+    "debtEquityLow": "부채비율이 낮다는 것은 자기자본 대비 빚이 적어 재무구조가 상대적으로 안정적이라는 의미입니다.",
+    "debtEquityHigh": "부채비율이 높다는 것은 자기자본 대비 빚이 많아 이자 부담이나 경기 악화 시 재무 위험이 커질 수 있다는 의미입니다.",
+    "evEbitda": "기업 전체 가치(EV)가 세전영업현금흐름(EBITDA)의 몇 배인지 보여주는 지표입니다.",
+    "evEbitdaLow": "EV/EBITDA가 낮다는 것은 영업현금흐름 대비 기업가치가 저렴하게 평가된다는 의미로, 저평가 신호이거나 성장성이 낮게 평가되고 있음을 뜻할 수 있습니다.",
+    "evEbitdaHigh": "EV/EBITDA가 높다는 것은 영업현금흐름 대비 기업가치가 높게 평가된다는 의미로, 높은 성장 기대가 반영되었거나 고평가 상태일 수 있습니다.",
+    "psr": "시가총액이 매출액에 비해 얼마나 높은지 보는 지표입니다. 아직 이익을 내지 못하는 성장기업 평가에 자주 쓰입니다.",
+    "psrLow": "PSR이 낮다는 것은 매출액 대비 시가총액이 저렴하다는 의미로, 저평가 신호이거나 아직 수익성이 낮은 업종·기업에서 흔히 나타납니다.",
+    "psrHigh": "PSR이 높다는 것은 매출액 대비 시가총액이 높게 평가된다는 의미로, 높은 성장성이나 향후 수익성 개선 기대가 반영된 경우가 많습니다.",
+    "operatingMargin": "매출액 중 영업활동으로 남긴 이익의 비율입니다. 높을수록 본업에서 돈을 잘 번다는 뜻입니다.",
+    "operatingMarginLow": "영업이익률이 낮다는 것은 본업에서 남기는 이익 비중이 작다는 의미로, 경쟁 심화나 원가 부담을 시사할 수 있습니다.",
+    "operatingMarginHigh": "영업이익률이 높다는 것은 본업에서 효율적으로 이익을 내고 있다는 의미로, 가격 경쟁력이나 원가 우위를 반영할 수 있습니다.",
+    "netMargin": "매출액 중 세금, 이자 등을 모두 제외하고 최종적으로 남긴 순이익의 비율입니다.",
+    "netMarginLow": "순이익률이 낮다는 것은 매출 대비 최종적으로 남는 이익이 적다는 의미입니다.",
+    "netMarginHigh": "순이익률이 높다는 것은 매출 대비 최종적으로 남는 이익이 많다는 의미입니다.",
+    "revenueGrowthYoy": "작년 같은 기간 대비 매출액이 얼마나 늘었는지(YoY, 전년동기대비) 보여줍니다.",
+    "revenueGrowthYoyLow": "매출 성장률이 낮거나 마이너스라는 것은 전년 대비 매출이 정체되거나 줄어들고 있다는 의미입니다.",
+    "revenueGrowthYoyHigh": "매출 성장률이 높다는 것은 전년 대비 매출이 빠르게 늘고 있다는 의미로, 다만 성장세가 지속 가능한지 함께 살펴볼 필요가 있습니다.",
+    "currentRatio": "1년 내 갚아야 할 부채(유동부채) 대비 1년 내 현금화 가능한 자산(유동자산)의 비율입니다. 높을수록 단기 지급 능력이 안정적입니다.",
+    "currentRatioLow": "유동비율이 낮다는 것(특히 100% 미만)은 1년 내 갚아야 할 부채에 비해 현금화 가능한 자산이 부족해 단기 자금 사정이 빠듯할 수 있다는 의미입니다.",
+    "currentRatioHigh": "유동비율이 높다는 것은 단기 지급 능력이 안정적이라는 의미이지만, 지나치게 높으면 현금이나 재고 등 자산을 효율적으로 활용하지 못하고 있다는 신호일 수도 있습니다.",
+    "interestCoverage": "영업이익이 이자비용의 몇 배인지 보여줍니다. 낮을수록 이자 갚을 여력이 부족하다는 뜻입니다.",
+    "interestCoverageLow": "이자보상배율이 낮다는 것은 영업이익으로 이자비용을 감당할 여력이 부족하다는 의미로, 낮을수록(1배 미만 등) 재무적 위험이 커집니다.",
+    "interestCoverageHigh": "이자보상배율이 높다는 것은 영업이익이 이자비용보다 훨씬 커서 이자 지급 여력이 충분하다는 의미입니다."
+  },
+  "news": {
+    "sentimentPositive": "긍정",
+    "sentimentNeutral": "중립",
+    "sentimentNegative": "부정",
+    "originalLink": "원문 보기",
+    "providerUnavailable": "일부 뉴스 Provider를 사용할 수 없습니다",
+    "relatedCoverage": "관련 보도"
+  },
+  "dcfPage": {
+    "revenueGrowth": "매출 성장률", "operatingMargin": "영업이익률", "taxRate": "법인세율",
+    "capexPctRevenue": "매출 대비 Capex", "workingCapitalPctRevenue": "매출 대비 운전자본",
+    "wacc": "WACC", "terminalGrowthRate": "영구성장률",
+    "enterpriseValue": "추정 기업가치(EV)", "equityValue": "추정 자기자본가치",
+    "pricePerShare": "추정 주당가치", "currentPrice": "현재가", "upside": "Upside/Downside",
+    "runDcf": "DCF 계산 실행"
+  },
+  "watchlistPage": {
+    "title": "관심기업",
+    "add": "관심기업추가",
+    "remove": "삭제",
+    "empty": "관심기업이 없습니다. 기업을 검색해 추가해보세요."
+  },
+  "analysisLabPage": {
+    "title": "Analysis Lab",
+    "description": "직접 Feature/모델/기간을 조합하여 분석을 실행할 수 있습니다.",
+    "target": "예측 대상", "features": "Feature 선택", "lags": "Lag", "model": "모델", "run": "분석 실행"
+  },
+  "simulationLabPage": {
+    "title": "Market Simulation Lab",
+    "description": "투자자 Persona 구성비를 조정하여 인공시장 반응을 실험해볼 수 있습니다 (Mock 결과).",
+    "run": "시뮬레이션 실행"
+  },
+  "aboutPage": {
+    "title": "소개 및 Methodology",
+    "philosophy": "이 플랫폼은 \"AI가 미래 주가를 정확히 맞힌다\"고 주장하지 않습니다. 과거 사례와 통계, 머신러닝을 이용하여 향후 시장 반응을 확률적으로 판단할 수 있도록 지원하는 것이 목표입니다."
+  },
+  "peerComparison": {
+    "title": "동종업체 비교 (Peer Comparison)",
+    "discountPremium": "업종 Median 대비",
+    "noPeers": "같은 업종으로 분류된 비교 대상 기업이 부족합니다.",
+    "interpretationTitle": "동종업계 대비 해석",
+    "higherThanPeers": "업종 대비 높음",
+    "lowerThanPeers": "업종 대비 낮음",
+    "similarToPeers": "업종과 비슷"
+  },
+  "searchPage": {
+    "title": "검색 결과",
+    "noResults": "검색 결과가 없습니다."
+  },
+  "eventStudy": {
+    "show": "이벤트 스터디 보기 (주가 반응 분석)",
+    "hide": "접기",
+    "tradingDaysAxis": "이벤트 발생일(D0) 기준 거래일",
+    "returnLabel": "누적 수익률",
+    "insufficientData": "이벤트 발생 이후 경과일이 짧아 아직 주가 반응 데이터가 부족합니다.",
+    "noEvent": "이 뉴스에서 추출된 Event 정보가 없어 분석할 수 없습니다.",
+    "excessReturnNote": "업종 지수 대비 초과수익률",
+    "excessReturn5d": "5일:",
+    "disclaimer": "과거 사례 기반 분석이며, 향후 동일한 패턴을 보장하지 않습니다."
+  },
+  "aiQa": {
+    "title": "AI에게 물어보기",
+    "subtitle": "이 종목의 실제 가격/재무/뉴스 데이터를 참고해 답변합니다.",
+    "placeholder": "예: 이 회사 부채비율 어때?",
+    "send": "전송",
+    "emptyHint": "이 종목에 대해 궁금한 점을 물어보세요.",
+    "thinking": "AI가 답변을 생성하는 중...",
+    "unavailable": "관리자가 아직 AI 질의응답 기능(Anthropic API Key)을 설정하지 않았습니다.",
+    "errorGeneric": "답변을 가져오지 못했습니다. 잠시 후 다시 시도해주세요.",
+    "disclaimer": "AI가 제공된 데이터를 바탕으로 생성한 답변이며, 투자 조언이 아닙니다."
+  },
+  "disclaimer": "본 분석은 투자 권유가 아니며 투자 결과를 보장하지 않습니다."
+}

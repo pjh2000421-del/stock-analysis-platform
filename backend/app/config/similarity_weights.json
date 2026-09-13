@@ -1,0 +1,20 @@
+{
+  "version": "2026.09.1",
+  "comment": "과거 유사 뉴스 Similarity Score(0~100) 계산에 사용되는 가중치. 하드코딩 대신 여기서 관리한다.",
+  "weights": {
+    "semantic_similarity": 0.20,
+    "event_type_match": 0.12,
+    "event_subtype_match": 0.08,
+    "amount_real_similarity": 0.10,
+    "revenue_ratio_similarity": 0.10,
+    "market_cap_ratio_similarity": 0.08,
+    "industry_match": 0.08,
+    "product_technology_similarity": 0.06,
+    "counterparty_similarity": 0.04,
+    "domestic_overseas_match": 0.03,
+    "commercialization_stage_match": 0.05,
+    "market_environment_similarity": 0.03,
+    "valuation_state_similarity": 0.02,
+    "sentiment_similarity": 0.01
+  }
+}

@@ -1,0 +1,43 @@
+# --- Web Framework ---
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.9.2
+pydantic-settings==2.5.2
+sqlalchemy==2.0.35
+python-dotenv==1.0.1
+httpx==0.27.2
+
+# --- 한국 주가 데이터 (API Key 불필요) ---
+finance-datareader==0.9.94
+beautifulsoup4==4.12.3
+lxml==5.3.0
+
+# --- 데이터 처리 / ML ---
+pandas==2.2.3
+numpy==1.26.4
+scikit-learn==1.5.2
+statsmodels==0.14.4
+xgboost==2.1.1
+joblib==1.4.2
+
+# --- 뉴스/감정 분석 ---
+# 기본: 한국어 금융 뉴스 감정분석(KR-FinBert-SC, snunlp) - transformers/torch 필요.
+# 버전이 빠르게 올라가는 패키지라 다른 의존성과 달리 정확히 고정(==)하지 않고 최소 버전만
+# 지정한다(오래된 버전 고정 시 나중에 pip에서 아예 못 받는 문제를 피하기 위함).
+# torch는 용량이 크고(수백MB~1GB+) 최초 실행 시 HuggingFace에서 모델 가중치도 추가로
+# 받는다(인터넷 연결 필요, 이후 로컬 캐시 재사용). GPU 없어도 CPU로 정상 동작한다.
+transformers>=4.40
+torch>=2.2
+# fallback: KR-FinBert-SC를 못 쓰는 환경(위 설치 실패, 오프라인 등)에서만 사용됨 -
+# 한국어 뉴스에는 정확도가 낮지만(대부분 중립 판정) 최소한 파이프라인이 죽지는 않게 해줌.
+vaderSentiment==3.3.2
+
+# --- 테스트 ---
+pytest==8.3.3
+pytest-asyncio==0.24.0
+
+# --- 선택적(무거운) 의존성: 아래는 필요 시 설치 ---
+# sentence-transformers  # 뉴스 semantic similarity (Phase2)
+# shap                   # Explainable AI (Phase3)
+# tensorflow             # LSTM/ANN 모델 (Phase3)
+# apscheduler            # 뉴스 모니터링 백그라운드 스케줄러 (Phase4)
