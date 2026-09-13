@@ -63,6 +63,29 @@ def search_companies(q: str = Query(..., min_length=1), db: Session = Depends(ge
     )
 
 
+@router.get("/debug/check-imports")
+def debug_check_imports():
+    """[임시 진단용] requirements.txt에 있는 주요 패키지 + 그 패키지들이 내부적으로
+    필요로 하는 선택적(optional) 의존성(예: pandas.read_html에 필요한 lxml/html5lib)까지
+    실제로 import 가능한지 한 번에 점검한다. plotly/html5lib 사례처럼 "우리 코드는 직접
+    안 쓰지만 라이브러리 내부에서 필요로 하는" 숨은 의존성을 배포 전에 미리 잡아내기 위함."""
+    modules = [
+        "fastapi", "uvicorn", "pydantic", "pydantic_settings", "sqlalchemy",
+        "dotenv", "httpx",
+        "FinanceDataReader", "bs4", "lxml", "html5lib", "plotly",
+        "pandas", "numpy", "sklearn", "statsmodels", "xgboost", "joblib",
+        "transformers", "torch", "vaderSentiment",
+    ]
+    results = {}
+    for name in modules:
+        try:
+            __import__(name)
+            results[name] = "ok"
+        except Exception as exc:  # noqa: BLE001
+            results[name] = f"{type(exc).__name__}: {exc}"
+    return results
+
+
 @router.get("/debug/stock-sources")
 def debug_stock_sources():
     """[임시 진단용] KRX 외 다른 market 인자/소스로도 목록을 가져올 수 있는지 확인."""
