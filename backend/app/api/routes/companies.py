@@ -63,35 +63,19 @@ def search_companies(q: str = Query(..., min_length=1), db: Session = Depends(ge
     )
 
 
-@router.get("/debug/stock-provider")
-def debug_stock_provider():
-    """[임시 진단용] Render 등 배포 환경에서 종목 마스터 목록 Provider(FinanceDataReader)가
-    실제로 성공/실패하는지, 실패라면 어떤 메시지인지 직접 확인하기 위한 일회성 엔드포인트.
-    _import_fdr()이 실제 예외를 감춘 일반 메시지로 바꿔버려서, 여기서는 import 자체를
-    직접 해보고 원본 예외(타입/메시지/traceback)를 그대로 노출한다.
-    원인 특정 후 제거할 예정이므로 response_model을 별도로 정의하지 않는다."""
-    import importlib.util
-    import sys
-    import traceback
+@router.get("/debug/stock-sources")
+def debug_stock_sources():
+    """[임시 진단용] KRX 외 다른 market 인자/소스로도 목록을 가져올 수 있는지 확인."""
+    import FinanceDataReader as fdr  # noqa: N813
 
-    result: dict = {}
-
-    result["python_version"] = sys.version
-    result["fdr_spec_found"] = importlib.util.find_spec("FinanceDataReader") is not None
-
-    try:
-        import FinanceDataReader as fdr  # noqa: N813
-
-        result["import_ok"] = True
-        result["fdr_version"] = getattr(fdr, "__version__", "unknown")
-        result["fdr_file"] = getattr(fdr, "__file__", "unknown")
-    except Exception as exc:  # noqa: BLE001
-        result["import_ok"] = False
-        result["error_type"] = type(exc).__name__
-        result["error_message"] = str(exc)
-        result["traceback"] = traceback.format_exc()
-
-    return result
+    results = {}
+    for market in ["KRX", "KOSPI", "KOSDAQ", "KRX-DESC", "NAVER"]:
+        try:
+            df = fdr.StockListing(market)
+            results[market] = {"ok": True, "rows": len(df), "columns": list(df.columns)[:10]}
+        except Exception as exc:  # noqa: BLE001
+            results[market] = {"ok": False, "error_type": type(exc).__name__, "error": str(exc)[:300]}
+    return results
 
 
 def _get_company_or_404(ticker: str, db: Session):

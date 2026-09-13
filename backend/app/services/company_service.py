@@ -10,8 +10,10 @@ Lazy Loading + Caching 원칙:
 """
 from __future__ import annotations
 
+import json
 import threading
 from datetime import datetime, timedelta
+from pathlib import Path
 
 from sqlalchemy import or_, select
 from sqlalchemy.exc import IntegrityError
@@ -20,7 +22,7 @@ from sqlalchemy.orm import Session
 from app.core.errors import NotFoundError
 from app.core.logging import get_logger
 from app.models.company import Company
-from app.providers.base import ProviderResult
+from app.providers.base import CompanyMasterRecord, ProviderResult
 from app.providers.stock_provider import get_stock_provider
 
 logger = get_logger(__name__)
@@ -31,9 +33,39 @@ QUOTE_REFRESH_INTERVAL = timedelta(minutes=15)
 # 부트스트랩(최초 1회 전체 로드)이 중복 실행되지 않도록 직렬화하는 락.
 _bootstrap_lock = threading.Lock()
 
+_FALLBACK_MASTER_LIST_PATH = Path(__file__).resolve().parent.parent / "data" / "krx_fallback_companies.json"
+
 
 def _has_any_company(db: Session) -> bool:
     return db.execute(select(Company.id).limit(1)).first() is not None
+
+
+def _load_fallback_master_list() -> ProviderResult:
+    """실 Provider(FinanceDataReader 등)가 배포 환경(예: 해외 리전 서버)에서 KRX 응답을
+    정상적으로 못 받아오는 경우를 대비한 최소한의 비상 목록.
+
+    시가총액 상위 대형주 위주로 직접 작성한 정적(static) 목록이라 전체 상장사를
+    커버하지는 못하지만, 검색/분석 기능 자체가 완전히 막히는 것은 막아준다.
+    (요구사항: Provider Fallback 원칙 - 외부 실패 시에도 서비스는 계속 동작해야 함)
+    """
+    try:
+        raw = json.loads(_FALLBACK_MASTER_LIST_PATH.read_text(encoding="utf-8"))
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("정적 fallback 종목 목록 로드 실패")
+        return ProviderResult(status="error", message=str(exc), source_name="static_fallback")
+
+    records = [
+        CompanyMasterRecord(
+            ticker=row["ticker"],
+            company_name=row["company_name"],
+            market=row.get("market"),
+            sector=row.get("sector"),
+            industry=row.get("industry"),
+            market_cap=row.get("market_cap"),
+        )
+        for row in raw
+    ]
+    return ProviderResult(status="ok", data=records, source_name="static_fallback")
 
 
 def _bootstrap_company_master_list(db: Session) -> ProviderResult:
@@ -50,7 +82,14 @@ def _bootstrap_company_master_list(db: Session) -> ProviderResult:
         provider = get_stock_provider()
         result = provider.get_company_master_list()
         if result.status != "ok":
-            return result
+            logger.warning(
+                "실 Provider(%s) 종목 목록 조회 실패(%s) - 정적 fallback 목록으로 대체합니다.",
+                provider.name,
+                result.message,
+            )
+            result = _load_fallback_master_list()
+            if result.status != "ok":
+                return result
 
         for record in result.data:
             existing = db.execute(
