@@ -41,3 +41,5 @@ pytest-asyncio==0.24.0
 # shap                   # Explainable AI (Phase3)
 # tensorflow             # LSTM/ANN 모델 (Phase3)
 # apscheduler            # 뉴스 모니터링 백그라운드 스케줄러 (Phase4)
+
+plotly==5.24.1
