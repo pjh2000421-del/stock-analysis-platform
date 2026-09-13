@@ -63,6 +63,23 @@ def search_companies(q: str = Query(..., min_length=1), db: Session = Depends(ge
     )
 
 
+@router.get("/debug/stock-provider")
+def debug_stock_provider():
+    """[임시 진단용] Render 등 배포 환경에서 종목 마스터 목록 Provider(FinanceDataReader)가
+    실제로 성공/실패하는지, 실패라면 어떤 메시지인지 직접 확인하기 위한 일회성 엔드포인트.
+    원인 특정 후 제거할 예정이므로 response_model을 별도로 정의하지 않는다."""
+    from app.providers.stock_provider import get_stock_provider
+
+    provider = get_stock_provider()
+    result = provider.get_company_master_list()
+    return {
+        "status": result.status,
+        "message": result.message,
+        "count": len(result.data) if result.data else 0,
+        "source_name": result.source_name,
+    }
+
+
 def _get_company_or_404(ticker: str, db: Session):
     try:
         return company_service.get_company_by_ticker(db, ticker)
