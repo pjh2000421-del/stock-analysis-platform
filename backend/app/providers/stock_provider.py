@@ -106,12 +106,22 @@ class FinanceDataReaderStockProvider(StockPriceProvider):
     def get_company_master_list(self) -> ProviderResult:
         try:
             fdr = self._import_fdr()
-            df = fdr.StockListing("KRX")
         except ProviderUnavailableError as exc:
             return ProviderResult(status="unavailable", message=str(exc), source_name=self.name)
+
+        try:
+            df = fdr.StockListing("KRX")
         except Exception as exc:  # noqa: BLE001
-            logger.exception("KRX 종목 목록 조회 실패")
-            return ProviderResult(status="error", message=str(exc), source_name=self.name)
+            # "KRX"(시가총액 기준) 엔드포인트는 배포 환경(해외 리전 서버 등)에서 KRX 쪽
+            # 응답을 못 받아오는 경우가 있다(빈 응답 -> JSON 파싱 실패). 이 경우 같은
+            # FinanceDataReader 안의 다른 소스(KRX-DESC, 상장법인목록 - 일반 HTML 표
+            # 크롤링이라 별도 세션/OTP가 필요 없어 더 안정적)로 한 번 더 시도해본다.
+            logger.warning("KRX(시가총액) 종목 목록 조회 실패(%s) - KRX-DESC로 재시도합니다.", exc)
+            try:
+                df = fdr.StockListing("KRX-DESC")
+            except Exception as exc2:  # noqa: BLE001
+                logger.exception("KRX-DESC 종목 목록 조회도 실패")
+                return ProviderResult(status="error", message=str(exc2), source_name=self.name)
 
         records: list[CompanyMasterRecord] = []
         cols = {c.lower(): c for c in df.columns}
