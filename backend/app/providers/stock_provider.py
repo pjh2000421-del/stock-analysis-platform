@@ -103,6 +103,38 @@ class FinanceDataReaderStockProvider(StockPriceProvider):
             mapping[ticker] = (sector, industry)
         return mapping
 
+    def _dart_fallback_master_list(self) -> ProviderResult:
+        """KRX 계열 소스(웹 크롤링 기반)가 배포 환경에서 전부 막혀있을 때의 대안.
+
+        OpenDART(금융감독원 전자공시)는 정식 공개 API(API Key 인증)라 KRX 웹 소스처럼
+        지역/IP 기반으로 응답이 달라질 가능성이 낮다. corpCode.xml 전체에서
+        종목코드(stock_code)가 있는 항목(=실제 상장기업)만 뽑아 마스터 목록으로 쓴다.
+        시장구분(KOSPI/KOSDAQ)이나 시가총액 정보는 DART corpCode에 없어 None으로 둔다.
+        """
+        settings = get_settings()
+        if not settings.dart_api_key:
+            return ProviderResult(status="unavailable", message="DART_API_KEY가 설정되어 있지 않습니다.", source_name=self.name)
+
+        try:
+            from app.providers.dart_common import download_full_listed_companies
+
+            rows = download_full_listed_companies(settings.dart_api_key)
+        except Exception as exc:  # noqa: BLE001
+            logger.exception("DART corpCode 기반 종목 목록 조회 실패")
+            return ProviderResult(status="error", message=str(exc), source_name="dart")
+
+        records = [
+            CompanyMasterRecord(ticker=row["stock_code"].zfill(6), company_name=row["corp_name"])
+            for row in rows
+        ]
+        return ProviderResult(
+            status="ok",
+            data=records,
+            source_name="dart",
+            source_url="https://opendart.fss.or.kr/",
+            retrieved_at=datetime.utcnow(),
+        )
+
     def get_company_master_list(self) -> ProviderResult:
         try:
             fdr = self._import_fdr()
@@ -120,7 +152,12 @@ class FinanceDataReaderStockProvider(StockPriceProvider):
             try:
                 df = fdr.StockListing("KRX-DESC")
             except Exception as exc2:  # noqa: BLE001
-                logger.exception("KRX-DESC 종목 목록 조회도 실패")
+                # KRX-DESC까지 실패하면(둘 다 웹 크롤링 기반) OpenDART 정식 API로 대체.
+                logger.warning("KRX-DESC 종목 목록 조회도 실패(%s) - DART corpCode로 재시도합니다.", exc2)
+                dart_result = self._dart_fallback_master_list()
+                if dart_result.status == "ok":
+                    return dart_result
+                logger.exception("DART fallback도 실패")
                 return ProviderResult(status="error", message=str(exc2), source_name=self.name)
 
         records: list[CompanyMasterRecord] = []

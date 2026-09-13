@@ -46,6 +46,30 @@ def _download_corp_codes(api_key: str) -> dict[str, str]:
     return mapping
 
 
+def download_full_listed_companies(api_key: str) -> list[dict[str, str]]:
+    """DART corpCode.xml 전체에서 stock_code(종목코드)가 있는 항목(=실제 상장기업)만
+    뽑아 (stock_code, corp_name, corp_code) 리스트로 반환한다.
+
+    DART는 스크래핑이 아닌 정식 공개 API라, KRX 웹 소스가 해외 리전 서버에서
+    막히는 것과 달리 지역 제한 없이 안정적으로 동작할 가능성이 높다. 전체 상장사
+    마스터 목록(종목코드/기업명)을 대체 소스로 확보하기 위한 용도.
+    """
+    resp = httpx.get(CORP_CODE_ENDPOINT, params={"crtfc_key": api_key}, timeout=30.0)
+    resp.raise_for_status()
+
+    listed: list[dict[str, str]] = []
+    with zipfile.ZipFile(io.BytesIO(resp.content)) as zf:
+        with zf.open("CORPCODE.xml") as f:
+            tree = ET.parse(f)
+            for node in tree.getroot().findall("list"):
+                stock_code = (node.findtext("stock_code") or "").strip()
+                corp_name = (node.findtext("corp_name") or "").strip()
+                corp_code = (node.findtext("corp_code") or "").strip()
+                if stock_code and corp_name:
+                    listed.append({"stock_code": stock_code, "corp_name": corp_name, "corp_code": corp_code})
+    return listed
+
+
 def get_corp_code(ticker: str, api_key: str) -> str | None:
     """캐시에서 corp_code를 조회하고, 없으면 최초 1회 다운로드 후 캐시한다."""
     mapping: dict[str, str] = {}
