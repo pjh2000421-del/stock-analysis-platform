@@ -2,7 +2,7 @@
 기업 검색 / 기업 상세 API 테스트 (요구사항 68).
 외부 Provider는 monkeypatch로 대체하여 네트워크 없이 검증한다.
 """
-from datetime import date
+from datetime import date, timedelta
 
 from app.models.company import Company
 from app.providers.base import PriceBar, ProviderResult
@@ -32,12 +32,19 @@ def test_get_company_detail_not_found(client, db_session):
 def test_get_company_detail_success(client, db_session, monkeypatch):
     _seed_company(db_session)
 
-    def fake_get_current_quote(self, ticker):
-        return ProviderResult(status="ok", data={"date": date.today(), "close": 72300, "change": 1100, "change_pct": 1.55, "volume": 1000000})
+    # 기업 상세의 현재가는 외부 현재가 API가 아니라 DB에 캐시된 최근 일봉 2개로 계산한다
+    # (price_service.get_latest_quote). 그래서 일봉 조회를 대체한다.
+    def fake_get_price_history(self, ticker, start, end):
+        today = date.today()
+        bars = [
+            PriceBar(date=today - timedelta(days=2), open=71000, high=71500, low=70800, close=71200, volume=900000),
+            PriceBar(date=today - timedelta(days=1), open=71300, high=72500, low=71100, close=72300, volume=1000000),
+        ]
+        return ProviderResult(status="ok", data=[b for b in bars if start <= b.date <= end])
 
     from app.providers.stock_provider import FinanceDataReaderStockProvider
 
-    monkeypatch.setattr(FinanceDataReaderStockProvider, "get_current_quote", fake_get_current_quote)
+    monkeypatch.setattr(FinanceDataReaderStockProvider, "get_price_history", fake_get_price_history)
 
     resp = client.get("/api/companies/005930")
     assert resp.status_code == 200
@@ -50,7 +57,8 @@ def test_get_company_prices(client, db_session, monkeypatch):
     company = _seed_company(db_session)
 
     def fake_get_price_history(self, ticker, start, end):
-        bars = [PriceBar(date=date(2026, 1, 2), open=70000, high=71000, low=69500, close=70500, volume=100000)]
+        # 고정 날짜를 쓰면 시간이 지나 "최근 1개월" 범위를 벗어나 실패하므로 오늘 기준 날짜를 쓴다.
+        bars = [PriceBar(date=date.today() - timedelta(days=3), open=70000, high=71000, low=69500, close=70500, volume=100000)]
         return ProviderResult(status="ok", data=bars)
 
     from app.providers.stock_provider import FinanceDataReaderStockProvider

@@ -8,6 +8,7 @@ API 테스트 공용 fixture.
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from app.db.base import Base
 from app.main import app
@@ -29,7 +30,11 @@ from app.models import (  # noqa: F401
 
 @pytest.fixture()
 def db_session():
-    engine = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
+    engine = create_engine(
+        "sqlite:///:memory:",
+        connect_args={"check_same_thread": False},
+        poolclass=StaticPool,  # 요청 스레드가 달라도 같은 메모리 DB를 쓰도록 연결 1개를 공유
+    )
     Base.metadata.create_all(bind=engine)
     TestingSessionLocal = sessionmaker(bind=engine)
     session = TestingSessionLocal()
