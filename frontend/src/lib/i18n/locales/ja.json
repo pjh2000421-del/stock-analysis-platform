@@ -10,7 +10,10 @@
     "estimated": "推定",
     "comingSoon": "次の開発フェーズで提供予定です。",
     "error": "エラーが発生しました。",
-    "retry": "再試行"
+    "retry": "再試行",
+    "compositeScore": "総合スコア",
+    "importanceScore": "重要度",
+    "tooltipAriaLabel": "説明を見る"
   },
   "nav": {
     "dashboard": "ダッシュボード",
@@ -52,28 +55,51 @@
     "unknown": "分類情報確認中"
   },
   "periods": {
-    "1D": "1日", "5D": "5日", "1M": "1ヶ月", "3M": "3ヶ月",
-    "6M": "6ヶ月", "1Y": "1年", "5Y": "5年", "MAX": "全期間"
+    "1D": "1日",
+    "5D": "5日",
+    "1M": "1ヶ月",
+    "3M": "3ヶ月",
+    "6M": "6ヶ月",
+    "1Y": "1年",
+    "5Y": "5年",
+    "MAX": "全期間"
   },
   "valuation": {
     "title": "バリュエーション",
-    "per": "PER", "forwardPer": "予想PER", "pbr": "PBR", "psr": "PSR",
-    "evEbitda": "EV/EBITDA", "peg": "PEG", "fcfYield": "FCF利回り", "earningsYield": "益利回り"
+    "per": "PER",
+    "forwardPer": "予想PER",
+    "pbr": "PBR",
+    "psr": "PSR",
+    "evEbitda": "EV/EBITDA",
+    "peg": "PEG",
+    "fcfYield": "FCF利回り",
+    "earningsYield": "益利回り"
   },
   "profitability": {
     "title": "収益性",
-    "roe": "ROE", "roa": "ROA", "roic": "ROIC",
-    "grossMargin": "売上総利益率", "operatingMargin": "営業利益率", "netMargin": "純利益率", "fcfMargin": "FCFマージン"
+    "roe": "ROE",
+    "roa": "ROA",
+    "roic": "ROIC",
+    "grossMargin": "売上総利益率",
+    "operatingMargin": "営業利益率",
+    "netMargin": "純利益率",
+    "fcfMargin": "FCFマージン"
   },
   "growth": {
     "title": "成長性",
-    "revenueGrowthYoy": "売上成長率(前年比)", "epsGrowthYoy": "EPS成長率(前年比)",
-    "operatingIncomeGrowthYoy": "営業利益成長率(前年比)", "fcfGrowthYoy": "FCF成長率(前年比)"
+    "revenueGrowthYoy": "売上成長率(前年比)",
+    "epsGrowthYoy": "EPS成長率(前年比)",
+    "operatingIncomeGrowthYoy": "営業利益成長率(前年比)",
+    "fcfGrowthYoy": "FCF成長率(前年比)"
   },
   "financialHealth": {
     "title": "財務安定性",
-    "debtEquity": "負債比率", "netDebt": "純有利子負債", "netDebtEbitda": "純有利子負債/EBITDA",
-    "currentRatio": "流動比率", "quickRatio": "当座比率", "interestCoverage": "インタレスト・カバレッジ・レシオ"
+    "debtEquity": "負債比率",
+    "netDebt": "純有利子負債",
+    "netDebtEbitda": "純有利子負債/EBITDA",
+    "currentRatio": "流動比率",
+    "quickRatio": "当座比率",
+    "interestCoverage": "インタレスト・カバレッジ・レシオ"
   },
   "simpleView": {
     "priceLevel": "価格水準",
@@ -136,12 +162,22 @@
     "relatedCoverage": "関連報道"
   },
   "dcfPage": {
-    "revenueGrowth": "売上成長率", "operatingMargin": "営業利益率", "taxRate": "法人税率",
-    "capexPctRevenue": "売上高対Capex比率", "workingCapitalPctRevenue": "売上高対運転資本比率",
-    "wacc": "WACC", "terminalGrowthRate": "永久成長率",
-    "enterpriseValue": "推定企業価値(EV)", "equityValue": "推定株主資本価値",
-    "pricePerShare": "推定一株当たり価値", "currentPrice": "現在価格", "upside": "上昇/下落余地",
-    "runDcf": "DCF計算を実行"
+    "revenueGrowth": "売上成長率",
+    "operatingMargin": "営業利益率",
+    "taxRate": "法人税率",
+    "capexPctRevenue": "売上高対Capex比率",
+    "workingCapitalPctRevenue": "売上高対運転資本比率",
+    "wacc": "WACC",
+    "terminalGrowthRate": "永久成長率",
+    "enterpriseValue": "推定企業価値(EV)",
+    "equityValue": "推定株主資本価値",
+    "pricePerShare": "推定一株当たり価値",
+    "currentPrice": "現在価格",
+    "upside": "上昇/下落余地",
+    "runDcf": "DCF計算を実行",
+    "suggestedWaccLoading": "銘柄別WACCを計算中...",
+    "suggestedWaccApplied": "ベータに基づく推定WACCが自動入力されました(参考値 - 自由に調整可能)",
+    "result": "結果"
   },
   "watchlistPage": {
     "title": "ウォッチリスト",
@@ -152,12 +188,32 @@
   "analysisLabPage": {
     "title": "Analysis Lab",
     "description": "Feature・モデル・期間を自由に組み合わせて分析を実行できます。",
-    "target": "予測対象", "features": "Feature選択", "lags": "Lag", "model": "モデル", "run": "分析実行"
+    "target": "予測対象",
+    "features": "Feature選択",
+    "lags": "Lag",
+    "model": "モデル",
+    "run": "分析実行",
+    "note": "参考",
+    "failedMessage": "分析に失敗しました。上記の参考メッセージをご確認ください。",
+    "confidence": "信頼度",
+    "predictedValue": "予測値",
+    "direction": "方向",
+    "probabilityUp": "上昇確率",
+    "predictionInterval": "予測区間",
+    "directionalAccuracy": "方向的中率",
+    "accuracy": "正確度",
+    "precisionMetric": "適合率",
+    "recall": "再現率",
+    "topFeatures": "主要Feature"
   },
   "simulationLabPage": {
     "title": "Market Simulation Lab",
     "description": "投資家ペルソナの構成比を調整して人工市場の反応を実験できます(Mock結果)。",
-    "run": "シミュレーション実行"
+    "run": "シミュレーション実行",
+    "newsId": "ニュースID",
+    "personaMixTotal": "合計",
+    "mockResultLabel": "MOCK RESULT",
+    "pricePathPreview": "価格パス(最初の10ステップ)"
   },
   "aboutPage": {
     "title": "紹介 & Methodology",
@@ -170,7 +226,11 @@
     "interpretationTitle": "同業他社比較の解釈",
     "higherThanPeers": "同業他社より高い",
     "lowerThanPeers": "同業他社より低い",
-    "similarToPeers": "同業他社と同程度"
+    "similarToPeers": "同業他社と同程度",
+    "companyColumn": "企業",
+    "medianRow": "業種 Median",
+    "deficitLoss": "赤字",
+    "deficitCapitalImpairment": "債務超過"
   },
   "searchPage": {
     "title": "検索結果",
@@ -198,5 +258,28 @@
     "errorGeneric": "回答を取得できませんでした。しばらくしてからもう一度お試しください。",
     "disclaimer": "この回答は提供されたデータに基づきAIが生成したものであり、投資助言ではありません。"
   },
-  "disclaimer": "本分析は投資勧誘ではなく、投資結果を保証するものではありません。"
+  "disclaimer": "本分析は投資勧誘ではなく、投資結果を保証するものではありません。",
+  "eventTypes": {
+    "SUPPLY_CONTRACT": "供給契約",
+    "NEW_PRODUCT": "新製品",
+    "NEW_TECHNOLOGY": "新技術",
+    "RND": "研究開発",
+    "PATENT": "特許",
+    "M_AND_A": "M&A",
+    "CAPEX": "設備投資",
+    "EARNINGS": "業績",
+    "REGULATION": "規制",
+    "LEGAL": "訴訟",
+    "MANAGEMENT": "経営陣",
+    "DIVIDEND": "配当",
+    "BUYBACK": "自社株",
+    "CAPITAL_INCREASE": "増資",
+    "SUPPLY_CHAIN": "サプライチェーン",
+    "GEOPOLITICAL": "地政学",
+    "PARTNERSHIP": "提携",
+    "PRODUCT_LAUNCH": "発売",
+    "PRODUCTION": "量産",
+    "GUIDANCE": "ガイダンス",
+    "OTHER": "その他"
+  }
 }

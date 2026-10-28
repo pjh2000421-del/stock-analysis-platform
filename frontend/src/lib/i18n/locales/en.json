@@ -10,7 +10,10 @@
     "estimated": "estimated",
     "comingSoon": "Coming in a future development phase.",
     "error": "An error occurred.",
-    "retry": "Retry"
+    "retry": "Retry",
+    "compositeScore": "Composite Score",
+    "importanceScore": "Importance",
+    "tooltipAriaLabel": "Show description"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -52,28 +55,51 @@
     "unknown": "Classification pending"
   },
   "periods": {
-    "1D": "1D", "5D": "5D", "1M": "1M", "3M": "3M",
-    "6M": "6M", "1Y": "1Y", "5Y": "5Y", "MAX": "MAX"
+    "1D": "1D",
+    "5D": "5D",
+    "1M": "1M",
+    "3M": "3M",
+    "6M": "6M",
+    "1Y": "1Y",
+    "5Y": "5Y",
+    "MAX": "MAX"
   },
   "valuation": {
     "title": "Valuation",
-    "per": "PER", "forwardPer": "Forward PER", "pbr": "PBR", "psr": "PSR",
-    "evEbitda": "EV/EBITDA", "peg": "PEG", "fcfYield": "FCF Yield", "earningsYield": "Earnings Yield"
+    "per": "PER",
+    "forwardPer": "Forward PER",
+    "pbr": "PBR",
+    "psr": "PSR",
+    "evEbitda": "EV/EBITDA",
+    "peg": "PEG",
+    "fcfYield": "FCF Yield",
+    "earningsYield": "Earnings Yield"
   },
   "profitability": {
     "title": "Profitability",
-    "roe": "ROE", "roa": "ROA", "roic": "ROIC",
-    "grossMargin": "Gross Margin", "operatingMargin": "Operating Margin", "netMargin": "Net Margin", "fcfMargin": "FCF Margin"
+    "roe": "ROE",
+    "roa": "ROA",
+    "roic": "ROIC",
+    "grossMargin": "Gross Margin",
+    "operatingMargin": "Operating Margin",
+    "netMargin": "Net Margin",
+    "fcfMargin": "FCF Margin"
   },
   "growth": {
     "title": "Growth",
-    "revenueGrowthYoy": "Revenue Growth (YoY)", "epsGrowthYoy": "EPS Growth (YoY)",
-    "operatingIncomeGrowthYoy": "Operating Income Growth (YoY)", "fcfGrowthYoy": "FCF Growth (YoY)"
+    "revenueGrowthYoy": "Revenue Growth (YoY)",
+    "epsGrowthYoy": "EPS Growth (YoY)",
+    "operatingIncomeGrowthYoy": "Operating Income Growth (YoY)",
+    "fcfGrowthYoy": "FCF Growth (YoY)"
   },
   "financialHealth": {
     "title": "Financial Health",
-    "debtEquity": "Debt/Equity", "netDebt": "Net Debt", "netDebtEbitda": "Net Debt/EBITDA",
-    "currentRatio": "Current Ratio", "quickRatio": "Quick Ratio", "interestCoverage": "Interest Coverage"
+    "debtEquity": "Debt/Equity",
+    "netDebt": "Net Debt",
+    "netDebtEbitda": "Net Debt/EBITDA",
+    "currentRatio": "Current Ratio",
+    "quickRatio": "Quick Ratio",
+    "interestCoverage": "Interest Coverage"
   },
   "simpleView": {
     "priceLevel": "Price Level",
@@ -136,12 +162,22 @@
     "relatedCoverage": "Related coverage:"
   },
   "dcfPage": {
-    "revenueGrowth": "Revenue Growth", "operatingMargin": "Operating Margin", "taxRate": "Tax Rate",
-    "capexPctRevenue": "Capex (% of Revenue)", "workingCapitalPctRevenue": "Working Capital (% of Revenue)",
-    "wacc": "WACC", "terminalGrowthRate": "Terminal Growth Rate",
-    "enterpriseValue": "Estimated Enterprise Value", "equityValue": "Estimated Equity Value",
-    "pricePerShare": "Estimated Price/Share", "currentPrice": "Current Price", "upside": "Upside/Downside",
-    "runDcf": "Run DCF"
+    "revenueGrowth": "Revenue Growth",
+    "operatingMargin": "Operating Margin",
+    "taxRate": "Tax Rate",
+    "capexPctRevenue": "Capex (% of Revenue)",
+    "workingCapitalPctRevenue": "Working Capital (% of Revenue)",
+    "wacc": "WACC",
+    "terminalGrowthRate": "Terminal Growth Rate",
+    "enterpriseValue": "Estimated Enterprise Value",
+    "equityValue": "Estimated Equity Value",
+    "pricePerShare": "Estimated Price/Share",
+    "currentPrice": "Current Price",
+    "upside": "Upside/Downside",
+    "runDcf": "Run DCF",
+    "suggestedWaccLoading": "Estimating company-specific WACC...",
+    "suggestedWaccApplied": "A beta-based estimated WACC has been pre-filled (for reference — feel free to adjust)",
+    "result": "Result"
   },
   "watchlistPage": {
     "title": "Watchlist",
@@ -152,12 +188,32 @@
   "analysisLabPage": {
     "title": "Analysis Lab",
     "description": "Combine features, models, and time ranges to run your own analysis.",
-    "target": "Prediction Target", "features": "Feature Selection", "lags": "Lag", "model": "Model", "run": "Run Analysis"
+    "target": "Prediction Target",
+    "features": "Feature Selection",
+    "lags": "Lag",
+    "model": "Model",
+    "run": "Run Analysis",
+    "note": "Note",
+    "failedMessage": "The analysis failed. Please check the note above.",
+    "confidence": "Confidence",
+    "predictedValue": "Predicted value",
+    "direction": "Direction",
+    "probabilityUp": "Probability up",
+    "predictionInterval": "Prediction interval",
+    "directionalAccuracy": "Directional accuracy",
+    "accuracy": "Accuracy",
+    "precisionMetric": "Precision",
+    "recall": "Recall",
+    "topFeatures": "Top features"
   },
   "simulationLabPage": {
     "title": "Market Simulation Lab",
     "description": "Adjust investor persona mix to experiment with simulated market reactions (mock results).",
-    "run": "Run Simulation"
+    "run": "Run Simulation",
+    "newsId": "News ID",
+    "personaMixTotal": "Total",
+    "mockResultLabel": "MOCK RESULT",
+    "pricePathPreview": "Price path (first 10 steps)"
   },
   "aboutPage": {
     "title": "About & Methodology",
@@ -170,7 +226,11 @@
     "interpretationTitle": "Interpretation vs. Peers",
     "higherThanPeers": "Higher than peers",
     "lowerThanPeers": "Lower than peers",
-    "similarToPeers": "Similar to peers"
+    "similarToPeers": "Similar to peers",
+    "companyColumn": "Company",
+    "medianRow": "Industry Median",
+    "deficitLoss": "Loss",
+    "deficitCapitalImpairment": "Capital Impairment"
   },
   "searchPage": {
     "title": "Search Results",
@@ -198,5 +258,28 @@
     "errorGeneric": "Failed to get an answer. Please try again in a moment.",
     "disclaimer": "This answer was generated by AI based on the provided data and is not investment advice."
   },
-  "disclaimer": "This analysis is not investment advice and does not guarantee investment outcomes."
+  "disclaimer": "This analysis is not investment advice and does not guarantee investment outcomes.",
+  "eventTypes": {
+    "SUPPLY_CONTRACT": "Supply Deal",
+    "NEW_PRODUCT": "New Product",
+    "NEW_TECHNOLOGY": "New Tech",
+    "RND": "R&D",
+    "PATENT": "Patent",
+    "M_AND_A": "M&A",
+    "CAPEX": "Capex",
+    "EARNINGS": "Earnings",
+    "REGULATION": "Regulation",
+    "LEGAL": "Legal",
+    "MANAGEMENT": "Management",
+    "DIVIDEND": "Dividend",
+    "BUYBACK": "Buyback",
+    "CAPITAL_INCREASE": "Cap. Increase",
+    "SUPPLY_CHAIN": "Supply Chain",
+    "GEOPOLITICAL": "Geopolitical",
+    "PARTNERSHIP": "Partnership",
+    "PRODUCT_LAUNCH": "Launch",
+    "PRODUCTION": "Production",
+    "GUIDANCE": "Guidance",
+    "OTHER": "News"
+  }
 }

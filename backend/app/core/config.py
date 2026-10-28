@@ -61,6 +61,16 @@ class Settings(BaseSettings):
     anthropic_api_key: str | None = None
     anthropic_model: str = "claude-sonnet-5"
 
+    # WACC 자동 추정(app/valuation/wacc.py)에 쓰는 무위험이자율/시장위험프리미엄.
+    # 한국 국고채(10년) 금리를 실시간 API(ECOS)로 붙이는 방안을 검토했으나, 정확한
+    # 통계표코드/항목코드를 공식 문서로 확실히 검증하지 못한 상태에서 임의로 하드코딩하면
+    # 조용히 틀린 값을 쓸 위험이 있어(요구사항 74 - 숫자를 함부로 만들지 않는다) 우선
+    # 사용자가 조정 가능한 설정값으로 둔다. 기본값은 2026년 상반기 기준 한국 국고채 10년
+    # 금리(약 3%대 중반)와 KOSPI 장기 평균 Equity Risk Premium(통상 5~6%대로 인용되는
+    # 범위의 하단)을 참고한 근사치이며, 실제 시장 상황에 맞게 .env에서 조정해야 한다.
+    risk_free_rate: float = 0.035
+    equity_risk_premium: float = 0.055
+
     # 뉴스 모니터링
     news_polling_interval_seconds: int = 300
 

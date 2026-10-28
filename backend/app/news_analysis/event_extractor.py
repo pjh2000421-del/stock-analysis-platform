@@ -10,10 +10,42 @@ LLM 기반 구조화 추출(company/product/amount 등 slot-filling)로 교체�
 """
 from __future__ import annotations
 
+import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 
 from app.schemas.common import EventType
+
+# --- 금액(원화) 추출 (요구사항 49 - 뉴스 중요도 판단에 "실제 영향 규모"를 반영하기 위함) ---
+#
+# "1조 2000억원", "500억원", "12억 3000만원" 처럼 조/억/만 단위가 이어지는 한국어 금액
+# 표현을 최선노력(best-effort)으로 파싱한다. 표/각주식 표기나 "약 1조원대", 달러 등
+# 외화 표기는 다루지 않는다 - 이 경우는 그냥 못 찾은 것으로 처리하고 절대 숫자를
+# 추측하지 않는다(요구사항 74: 근거 없는 숫자를 만들지 않는다).
+_AMOUNT_UNIT_MULTIPLIERS: dict[str, float] = {
+    "조": 1_0000_0000_0000.0,  # 10^12
+    "억": 1_0000_0000.0,  # 10^8
+    "만": 1_0000.0,  # 10^4
+}
+_AMOUNT_BLOCK_RE = re.compile(r"(?:\d[\d,]*(?:\.\d+)?\s*(?:조|억|만)\s*)+원")
+_AMOUNT_PART_RE = re.compile(r"(\d[\d,]*(?:\.\d+)?)\s*(조|억|만)")
+
+
+def _extract_amount_krw(text: str) -> float | None:
+    """제목/요약 텍스트에서 원화 금액을 파싱한다. 매치되는 표현이 없으면 None."""
+    match = _AMOUNT_BLOCK_RE.search(text)
+    if not match:
+        return None
+    total = 0.0
+    found = False
+    for number_str, unit in _AMOUNT_PART_RE.findall(match.group(0)):
+        try:
+            number = float(number_str.replace(",", ""))
+        except ValueError:
+            continue
+        total += number * _AMOUNT_UNIT_MULTIPLIERS[unit]
+        found = True
+    return total if found else None
 
 # event_type: 제목/요약에 포함되면 해당 유형으로 분류할 키워드 목록.
 # 우선순위 순서대로 검사하며, 여러 키워드가 매치될 경우 리스트 앞쪽 유형을 우선한다.
@@ -66,10 +98,11 @@ class KeywordRuleEventExtractor(EventExtractor):
 
     def extract(self, title: str, summary: str | None) -> ExtractedEvent:
         text = f"{title} {summary or ''}"
+        amount = _extract_amount_krw(text)
         for event_type, keywords in _KEYWORD_RULES:
             if any(kw in text for kw in keywords):
-                return ExtractedEvent(event_type=event_type.value)
-        return ExtractedEvent(event_type=EventType.OTHER.value, confidence=0.1)
+                return ExtractedEvent(event_type=event_type.value, amount_nominal=amount)
+        return ExtractedEvent(event_type=EventType.OTHER.value, confidence=0.1, amount_nominal=amount)
 
 
 def get_event_extractor() -> EventExtractor:

@@ -20,6 +20,7 @@ import type {
   PredictionResponse,
   PriceHistoryResponse,
   SimpleViewResponse,
+  SuggestedDCFAssumptions,
   WatchlistItemOut,
 } from "@/types/api";
 
@@ -95,6 +96,9 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ ticker, assumptions }),
     }),
+
+  getSuggestedDcfAssumptions: (ticker: string) =>
+    request<SuggestedDCFAssumptions>(`/dcf/${ticker}/suggested-assumptions`),
 
   getWatchlist: () => request<WatchlistItemOut[]>(`/watchlist`),
 

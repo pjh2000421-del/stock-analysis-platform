@@ -261,7 +261,12 @@ def get_company_metrics(ticker: str, db: Session = Depends(get_db)):
         as_of=metric.date,
         valuation=ValuationMetrics(
             per=_vs(metric.per, "Price / EPS", is_deficit=metric.per_is_deficit, deficit_label="적자"),
-            forward_per=_vs(metric.forward_per, "N/A (컨센서스 데이터 미연동)"),
+            # Forward PER(향후 12개월 예상 실적 기준 PER)은 증권사 컨센서스(실적 추정치) 데이터가
+            # 있어야 계산 가능한데, 국내 상장기업 전체를 커버하는 무료/신뢰 가능한 컨센서스 API가
+            # 없다. 과거 매출 성장률 등으로 임의 추정한 값을 "Forward PER"이라는 이름으로 보여주면
+            # 마치 애널리스트 컨센서스인 것처럼 오인될 위험이 커서(요구사항 74: 숫자를 함부로
+            # 만들지 않는다), 신뢰할 수 있는 데이터 소스를 확보하기 전까지는 의도적으로 N/A로 둔다.
+            forward_per=_vs(metric.forward_per, "컨센서스(증권사 실적 추정치) 데이터 미연동 - 신뢰 가능한 무료 API 부재로 의도적 N/A"),
             pbr=_vs(metric.pbr, "Price / BPS", is_deficit=metric.pbr_is_deficit, deficit_label="자본잠식"),
             psr=_vs(metric.psr, "시가총액 / 매출액"),
             ev_ebitda=_vs(
@@ -309,9 +314,18 @@ def get_company_metrics(ticker: str, db: Session = Depends(get_db)):
             interest_coverage=_vs(metric.interest_coverage, "영업이익 / 이자비용"),
         ),
         capital_cost=CapitalCostMetrics(
-            roic=_vs(metric.roic, "NOPAT / 투하자본"),
-            wacc=_vs(metric.wacc, "TODO: WACC 산출 로직 미구현"),
-            roic_minus_wacc=_vs(metric.roic_minus_wacc, "ROIC - WACC"),
+            roic=_vs(metric.roic, "NOPAT(영업이익*(1-법인세율 22% 가정)) / 투하자본(자본총계+순차입금)"),
+            # WACC은 베타(최근 가격 데이터로 직접 계산)를 이용한 CAPM 기반 추정치다.
+            # 무위험이자율/시장위험프리미엄은 실시간 국채금리 API 연동을 검증하지 못해
+            # 설정값(app/core/config.py risk_free_rate/equity_risk_premium)을 사용하므로
+            # 항상 추정치(is_estimated=True)로 표시한다 (요구사항 74).
+            wacc=_vs(
+                metric.wacc,
+                "WACC = E/(E+D)*Re + D/(E+D)*Rd*(1-법인세율), Re=무위험이자율+베타*시장위험프리미엄(CAPM), "
+                "베타는 최근 종목/KOSPI 일별수익률로 직접 계산, Rd=이자비용/총차입금 (app/valuation/wacc.py 참고)",
+                is_estimated=True,
+            ),
+            roic_minus_wacc=_vs(metric.roic_minus_wacc, "ROIC - WACC (경제적 부가가치 창출 여부 판단)", is_estimated=True),
         ),
     )
 

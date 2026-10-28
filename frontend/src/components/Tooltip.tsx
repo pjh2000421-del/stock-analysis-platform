@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 
+import { useTranslation } from "@/lib/i18n/I18nProvider";
+
 /** Simple View용 금융 용어 설명 Tooltip (요구사항 24). */
 export function Tooltip({ text }: { text: string }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   return (
     <span className="relative inline-block">
@@ -13,7 +16,7 @@ export function Tooltip({ text }: { text: string }) {
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
         onClick={() => setOpen((v) => !v)}
-        aria-label="설명 보기"
+        aria-label={t("common.tooltipAriaLabel")}
       >
         ?
       </button>

@@ -35,10 +35,21 @@ def get_model(model_type: str, task_type: str = "regression", **kwargs) -> BaseM
 
         return XGBoostRegressionModel(**kwargs)
 
-    if model_type in ("ann", "lstm"):
-        raise ProviderUnavailableError(
-            model_type, "딥러닝 모델은 TensorFlow 설치 및 시퀀스 데이터 준비가 필요합니다 (TODO)."
-        )
+    if model_type == "ann":
+        # ANNModel(input_dim=...)은 호출부(ml/pipeline.py)가 X.shape[1]을 kwargs로 넘겨야 한다.
+        # tensorflow가 설치되어 있지 않으면 ANNModel.__init__ 내부에서 ProviderUnavailableError를
+        # 던진다 (요구사항: 무거운 선택적 의존성 미설치 시 명확히 unavailable 처리).
+        from app.ml.models.deep_learning_model import ANNModel
+
+        return ANNModel(**kwargs)
+
+    if model_type == "lstm":
+        # LSTMModel(timesteps=..., n_features=...)도 마찬가지로 호출부가 kwargs로 넘겨야 한다.
+        # LSTM은 2D Feature 행렬을 그대로 쓸 수 없어 ml/preprocessing.py의 build_sequences()로
+        # 미리 3D 시퀀스로 변환한 데이터를 받는다는 전제이다 (ml/pipeline.py의 LSTM 전용 분기 참고).
+        from app.ml.models.deep_learning_model import LSTMModel
+
+        return LSTMModel(**kwargs)
 
     registry = CLASSIFICATION_MODELS if task_type == "classification" else REGRESSION_MODELS
     model_cls = registry.get(model_type)

@@ -33,3 +33,15 @@ class DCFResult(BaseModel):
     current_price: float | None
     upside_pct: float | None
     note: str = "DCF 결과는 입력 가정에 따라 크게 달라질 수 있는 추정치이며 '정답'이 아닙니다."
+
+
+class SuggestedDCFAssumptions(BaseModel):
+    """DCF Calculator를 열 때 초기값으로 쓰는, 종목별로 계산된 제안 가정값 (요구사항: WACC 자동 제안).
+
+    사용자는 이 값을 그대로 쓰거나 자유롭게 수정할 수 있다 - "추천"일 뿐 강제 값이 아니다.
+    """
+
+    assumptions: DCFAssumptions
+    wacc_calculation_method: str
+    wacc_is_estimated: bool
+    notes: list[str] = []

@@ -119,7 +119,7 @@ export function PeerComparisonTable({ data }: { data: PeerComparisonResponse | n
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-200 text-left text-xs text-gray-400">
-              <th className="py-2 pr-2 font-normal">기업</th>
+              <th className="py-2 pr-2 font-normal">{t("peerComparison.companyColumn")}</th>
               <th className="py-2 pr-2 text-right font-normal">PER</th>
               <th className="py-2 pr-2 text-right font-normal">PBR</th>
               <th className="py-2 pr-2 text-right font-normal">EV/EBITDA</th>
@@ -128,7 +128,11 @@ export function PeerComparisonTable({ data }: { data: PeerComparisonResponse | n
           </thead>
           <tbody className="divide-y divide-gray-100">
             {data.rows.map((row, i) => {
-              const isMedianRow = row.label === "업종 Median";
+              // "업종 Median" 집계행은 ticker가 없는 것으로 이미 스키마상 구분된다
+              // (PeerComparisonRow.ticker: 기업 행이면 종목코드, 집계행이면 null) - 백엔드가
+              // 내려주는 한글 label 문자열과 직접 비교하면 다국어 환경에서 깨지기 쉬워
+              // ticker === null이라는 locale-independent 신호를 대신 사용한다.
+              const isMedianRow = row.ticker === null;
               return (
                 <tr key={i} className={isMedianRow ? "font-medium text-gray-700" : "text-gray-900"}>
                   <td className="py-2 pr-2">
@@ -137,21 +141,31 @@ export function PeerComparisonTable({ data }: { data: PeerComparisonResponse | n
                         {row.label}
                       </Link>
                     ) : (
-                      row.label
+                      t("peerComparison.medianRow")
                     )}
                   </td>
                   <td className="py-2 pr-2 text-right tabular-num">
-                    <MetricCell value={row.per} suffix="x" isDeficit={row.per_is_deficit} deficitLabel="적자" />
+                    <MetricCell
+                      value={row.per}
+                      suffix="x"
+                      isDeficit={row.per_is_deficit}
+                      deficitLabel={t("peerComparison.deficitLoss")}
+                    />
                   </td>
                   <td className="py-2 pr-2 text-right tabular-num">
-                    <MetricCell value={row.pbr} suffix="x" isDeficit={row.pbr_is_deficit} deficitLabel="자본잠식" />
+                    <MetricCell
+                      value={row.pbr}
+                      suffix="x"
+                      isDeficit={row.pbr_is_deficit}
+                      deficitLabel={t("peerComparison.deficitCapitalImpairment")}
+                    />
                   </td>
                   <td className="py-2 pr-2 text-right tabular-num">
                     <MetricCell
                       value={row.ev_ebitda}
                       suffix="x"
                       isDeficit={row.ev_ebitda_is_deficit}
-                      deficitLabel="적자"
+                      deficitLabel={t("peerComparison.deficitLoss")}
                       isEstimated={row.ev_ebitda_is_estimated}
                       estimatedLabel={t("common.estimated")}
                     />
@@ -201,7 +215,7 @@ export function PeerComparisonTable({ data }: { data: PeerComparisonResponse | n
         })}
         {(() => {
           const selfRow = data.rows.find((r) => r.ticker === data.ticker);
-          const medianRow = data.rows.find((r) => r.label === "업종 Median");
+          const medianRow = data.rows.find((r) => r.ticker === null);
           if (!selfRow || !medianRow || selfRow.roe === null || medianRow.roe === null) return null;
           const diff = selfRow.roe - medianRow.roe;
           const SIMILAR_THRESHOLD = 2; // %p

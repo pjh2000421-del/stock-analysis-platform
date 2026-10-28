@@ -266,6 +266,13 @@ export interface DCFResult {
   note: string;
 }
 
+export interface SuggestedDCFAssumptions {
+  assumptions: DCFAssumptions;
+  wacc_calculation_method: string;
+  wacc_is_estimated: boolean;
+  notes: string[];
+}
+
 export interface WatchlistItemOut {
   id: number;
   ticker: string;

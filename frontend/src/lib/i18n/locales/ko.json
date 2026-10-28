@@ -10,7 +10,10 @@
     "estimated": "추정",
     "comingSoon": "다음 개발 단계에서 제공될 예정입니다.",
     "error": "오류가 발생했습니다.",
-    "retry": "다시 시도"
+    "retry": "다시 시도",
+    "compositeScore": "종합 점수",
+    "importanceScore": "중요도",
+    "tooltipAriaLabel": "설명 보기"
   },
   "nav": {
     "dashboard": "대시보드",
@@ -52,28 +55,51 @@
     "unknown": "분류 정보 확인 중"
   },
   "periods": {
-    "1D": "1일", "5D": "5일", "1M": "1개월", "3M": "3개월",
-    "6M": "6개월", "1Y": "1년", "5Y": "5년", "MAX": "전체"
+    "1D": "1일",
+    "5D": "5일",
+    "1M": "1개월",
+    "3M": "3개월",
+    "6M": "6개월",
+    "1Y": "1년",
+    "5Y": "5년",
+    "MAX": "전체"
   },
   "valuation": {
     "title": "Valuation",
-    "per": "PER", "forwardPer": "Forward PER", "pbr": "PBR", "psr": "PSR",
-    "evEbitda": "EV/EBITDA", "peg": "PEG", "fcfYield": "FCF Yield", "earningsYield": "Earnings Yield"
+    "per": "PER",
+    "forwardPer": "Forward PER",
+    "pbr": "PBR",
+    "psr": "PSR",
+    "evEbitda": "EV/EBITDA",
+    "peg": "PEG",
+    "fcfYield": "FCF Yield",
+    "earningsYield": "Earnings Yield"
   },
   "profitability": {
     "title": "수익성",
-    "roe": "ROE", "roa": "ROA", "roic": "ROIC",
-    "grossMargin": "매출총이익률", "operatingMargin": "영업이익률", "netMargin": "순이익률", "fcfMargin": "FCF 마진"
+    "roe": "ROE",
+    "roa": "ROA",
+    "roic": "ROIC",
+    "grossMargin": "매출총이익률",
+    "operatingMargin": "영업이익률",
+    "netMargin": "순이익률",
+    "fcfMargin": "FCF 마진"
   },
   "growth": {
     "title": "성장성",
-    "revenueGrowthYoy": "매출 성장률(YoY)", "epsGrowthYoy": "EPS 성장률(YoY)",
-    "operatingIncomeGrowthYoy": "영업이익 성장률(YoY)", "fcfGrowthYoy": "FCF 성장률(YoY)"
+    "revenueGrowthYoy": "매출 성장률(YoY)",
+    "epsGrowthYoy": "EPS 성장률(YoY)",
+    "operatingIncomeGrowthYoy": "영업이익 성장률(YoY)",
+    "fcfGrowthYoy": "FCF 성장률(YoY)"
   },
   "financialHealth": {
     "title": "재무 안정성",
-    "debtEquity": "부채비율", "netDebt": "순차입금", "netDebtEbitda": "순차입금/EBITDA",
-    "currentRatio": "유동비율", "quickRatio": "당좌비율", "interestCoverage": "이자보상배율"
+    "debtEquity": "부채비율",
+    "netDebt": "순차입금",
+    "netDebtEbitda": "순차입금/EBITDA",
+    "currentRatio": "유동비율",
+    "quickRatio": "당좌비율",
+    "interestCoverage": "이자보상배율"
   },
   "simpleView": {
     "priceLevel": "가격 수준",
@@ -136,12 +162,22 @@
     "relatedCoverage": "관련 보도"
   },
   "dcfPage": {
-    "revenueGrowth": "매출 성장률", "operatingMargin": "영업이익률", "taxRate": "법인세율",
-    "capexPctRevenue": "매출 대비 Capex", "workingCapitalPctRevenue": "매출 대비 운전자본",
-    "wacc": "WACC", "terminalGrowthRate": "영구성장률",
-    "enterpriseValue": "추정 기업가치(EV)", "equityValue": "추정 자기자본가치",
-    "pricePerShare": "추정 주당가치", "currentPrice": "현재가", "upside": "Upside/Downside",
-    "runDcf": "DCF 계산 실행"
+    "revenueGrowth": "매출 성장률",
+    "operatingMargin": "영업이익률",
+    "taxRate": "법인세율",
+    "capexPctRevenue": "매출 대비 Capex",
+    "workingCapitalPctRevenue": "매출 대비 운전자본",
+    "wacc": "WACC",
+    "terminalGrowthRate": "영구성장률",
+    "enterpriseValue": "추정 기업가치(EV)",
+    "equityValue": "추정 자기자본가치",
+    "pricePerShare": "추정 주당가치",
+    "currentPrice": "현재가",
+    "upside": "Upside/Downside",
+    "runDcf": "DCF 계산 실행",
+    "suggestedWaccLoading": "종목별 WACC 계산 중...",
+    "suggestedWaccApplied": "베타 기반 추정 WACC이 자동으로 채워졌습니다 (참고용 - 자유롭게 수정 가능)",
+    "result": "결과"
   },
   "watchlistPage": {
     "title": "관심기업",
@@ -152,12 +188,32 @@
   "analysisLabPage": {
     "title": "Analysis Lab",
     "description": "직접 Feature/모델/기간을 조합하여 분석을 실행할 수 있습니다.",
-    "target": "예측 대상", "features": "Feature 선택", "lags": "Lag", "model": "모델", "run": "분석 실행"
+    "target": "예측 대상",
+    "features": "Feature 선택",
+    "lags": "Lag",
+    "model": "모델",
+    "run": "분석 실행",
+    "note": "참고",
+    "failedMessage": "분석에 실패했습니다. 위 참고 메시지를 확인해주세요.",
+    "confidence": "신뢰도",
+    "predictedValue": "예측값",
+    "direction": "방향",
+    "probabilityUp": "상승 확률",
+    "predictionInterval": "예측 구간",
+    "directionalAccuracy": "방향 적중률",
+    "accuracy": "정확도",
+    "precisionMetric": "정밀도",
+    "recall": "재현율",
+    "topFeatures": "주요 Feature"
   },
   "simulationLabPage": {
     "title": "Market Simulation Lab",
     "description": "투자자 Persona 구성비를 조정하여 인공시장 반응을 실험해볼 수 있습니다 (Mock 결과).",
-    "run": "시뮬레이션 실행"
+    "run": "시뮬레이션 실행",
+    "newsId": "뉴스 ID",
+    "personaMixTotal": "합계",
+    "mockResultLabel": "MOCK RESULT",
+    "pricePathPreview": "가격 경로(최초 10 step)"
   },
   "aboutPage": {
     "title": "소개 및 Methodology",
@@ -170,7 +226,11 @@
     "interpretationTitle": "동종업계 대비 해석",
     "higherThanPeers": "업종 대비 높음",
     "lowerThanPeers": "업종 대비 낮음",
-    "similarToPeers": "업종과 비슷"
+    "similarToPeers": "업종과 비슷",
+    "companyColumn": "기업",
+    "medianRow": "업종 Median",
+    "deficitLoss": "적자",
+    "deficitCapitalImpairment": "자본잠식"
   },
   "searchPage": {
     "title": "검색 결과",
@@ -198,5 +258,28 @@
     "errorGeneric": "답변을 가져오지 못했습니다. 잠시 후 다시 시도해주세요.",
     "disclaimer": "AI가 제공된 데이터를 바탕으로 생성한 답변이며, 투자 조언이 아닙니다."
   },
-  "disclaimer": "본 분석은 투자 권유가 아니며 투자 결과를 보장하지 않습니다."
+  "disclaimer": "본 분석은 투자 권유가 아니며 투자 결과를 보장하지 않습니다.",
+  "eventTypes": {
+    "SUPPLY_CONTRACT": "공급계약",
+    "NEW_PRODUCT": "신제품",
+    "NEW_TECHNOLOGY": "신기술",
+    "RND": "R&D",
+    "PATENT": "특허",
+    "M_AND_A": "M&A",
+    "CAPEX": "설비투자",
+    "EARNINGS": "실적",
+    "REGULATION": "규제",
+    "LEGAL": "소송",
+    "MANAGEMENT": "경영진",
+    "DIVIDEND": "배당",
+    "BUYBACK": "자사주",
+    "CAPITAL_INCREASE": "증자",
+    "SUPPLY_CHAIN": "공급망",
+    "GEOPOLITICAL": "지정학",
+    "PARTNERSHIP": "협력",
+    "PRODUCT_LAUNCH": "출시",
+    "PRODUCTION": "양산",
+    "GUIDANCE": "가이던스",
+    "OTHER": "기타"
+  }
 }

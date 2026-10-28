@@ -54,6 +54,27 @@ def inverse_transform(scaler: MinMaxScaler, scaled_values: np.ndarray) -> np.nda
     return scaler.inverse_transform(scaled_values)
 
 
+def build_sequences(X: np.ndarray, y: np.ndarray, timesteps: int) -> tuple[np.ndarray, np.ndarray]:
+    """2D (samples, features) 배열을 LSTM이 요구하는 3D (samples, timesteps, features)
+    슬라이딩 윈도우 시퀀스로 변환한다 (요구사항 34 - ml/models/deep_learning_model.py의
+    LSTMModel TODO였던 "시계열 3D 입력으로 재구성하는 유틸").
+
+    i번째 결과 시퀀스는 원본 X의 [i, i+timesteps) 구간이고, 그에 대응하는 타깃은
+    y[i+timesteps-1] (그 윈도우의 마지막 시점 타깃)이다 - 즉 "최근 timesteps일간의
+    Feature로 그 시점의 타깃을 예측"하는 구조. 시퀀스를 만들 수 있을 만큼 데이터가
+    없으면(len(X) < timesteps) 빈 배열을 반환하고, 호출부가 이를 보고 학습을 건너뛰도록 한다.
+    """
+    n = len(X)
+    if n < timesteps:
+        n_features = X.shape[1] if X.ndim == 2 else 0
+        return np.empty((0, timesteps, n_features)), np.empty((0,))
+
+    n_sequences = n - timesteps + 1
+    sequences = np.stack([X[i : i + timesteps] for i in range(n_sequences)])
+    targets = y[timesteps - 1 :]
+    return sequences, targets
+
+
 def build_price_feature_frame(df: pd.DataFrame) -> pd.DataFrame:
     """
     OHLCV DataFrame(columns: open, high, low, close, volume)으로부터

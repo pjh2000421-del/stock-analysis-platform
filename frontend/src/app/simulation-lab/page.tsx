@@ -46,7 +46,7 @@ export default function SimulationLabPage() {
       <p className="text-sm text-gray-500">{t("simulationLabPage.description")}</p>
 
       <div className="rounded border border-gray-200 bg-white p-4">
-        <label className="mb-1 block text-sm text-gray-500">뉴스 ID</label>
+        <label className="mb-1 block text-sm text-gray-500">{t("simulationLabPage.newsId")}</label>
         <input
           type="number"
           value={newsId}
@@ -70,7 +70,9 @@ export default function SimulationLabPage() {
             </div>
           ))}
         </div>
-        <p className={`mt-2 text-xs ${total === 100 ? "text-gray-400" : "text-negative"}`}>합계: {total}%</p>
+        <p className={`mt-2 text-xs ${total === 100 ? "text-gray-400" : "text-negative"}`}>
+          {t("simulationLabPage.personaMixTotal")}: {total}%
+        </p>
 
         <button
           onClick={run}
@@ -83,11 +85,13 @@ export default function SimulationLabPage() {
 
       {result && (
         <div className="rounded border border-gray-200 bg-white p-4 text-sm">
-          <p className="mb-2 text-xs text-yellow-600">MOCK RESULT — {result.note}</p>
+          <p className="mb-2 text-xs text-yellow-600">
+            {t("simulationLabPage.mockResultLabel")} — {result.note}
+          </p>
           <p>Bubble Indicator: {result.bubble_indicator}</p>
           <p>Herding Indicator: {result.herding_indicator}</p>
           <p className="mt-2 text-gray-400">
-            가격 경로(최초 10 step): {result.price_path.slice(0, 10).join(", ")}
+            {t("simulationLabPage.pricePathPreview")}: {result.price_path.slice(0, 10).join(", ")}
           </p>
         </div>
       )}

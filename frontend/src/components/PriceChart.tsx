@@ -4,9 +4,33 @@ import { useEffect, useRef, useState } from "react";
 
 import { useTranslation } from "@/lib/i18n/I18nProvider";
 import { api } from "@/lib/api";
-import type { PriceHistoryResponse } from "@/types/api";
+import type { EventMarker, PriceHistoryResponse } from "@/types/api";
 
 const PERIODS = ["1D", "5D", "1M", "3M", "6M", "1Y", "5Y", "MAX"] as const;
+
+// 차트 위 Marker에 뉴스 제목을 그대로 잘라붙이면(예: 12자 truncate) 여러 건이 겹칠 때
+// 화면이 매우 지저분해진다. event_type이 있으면 "공급계약"/"실적" 같은 한 단어짜리
+// 분류 라벨로 압축해서 보여주고, 전체 제목은 마우스오버 시 Tooltip으로만 보여준다.
+function markerShortLabel(m: EventMarker, t: (k: string, f?: string) => string): string {
+  if (m.event_type) {
+    const label = t(`eventTypes.${m.event_type}`, "");
+    if (label) return label;
+  }
+  return m.title.slice(0, 6);
+}
+
+// lightweight-charts는 "yyyy-mm-dd" 문자열로 넣은 시간을 내부적으로 BusinessDay 객체
+// ({year, month, day})로 정규화해서 돌려줄 수 있다. crosshairMove의 param.time과
+// EventMarker.date(문자열)를 같은 키로 비교하려면 항상 "yyyy-mm-dd" 문자열로 맞춰야 한다.
+function timeToDateKey(time: unknown): string | null {
+  if (typeof time === "string") return time;
+  if (typeof time === "number") return null; // UTCTimestamp(일중 데이터) - 이 차트는 일봉만 쓰므로 해당 없음
+  if (time && typeof time === "object" && "year" in time && "month" in time && "day" in time) {
+    const bd = time as { year: number; month: number; day: number };
+    return `${bd.year}-${String(bd.month).padStart(2, "0")}-${String(bd.day).padStart(2, "0")}`;
+  }
+  return null;
+}
 
 /**
  * 주가 차트 (요구사항 7).
@@ -18,6 +42,7 @@ export function PriceChart({ ticker }: { ticker: string }) {
   const [period, setPeriod] = useState<(typeof PERIODS)[number]>("3M");
   const [data, setData] = useState<PriceHistoryResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [hoverTooltip, setHoverTooltip] = useState<{ x: number; y: number; markers: EventMarker[] } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -91,9 +116,35 @@ export function PriceChart({ ticker }: { ticker: string }) {
             position: "aboveBar",
             color: "#0f2942",
             shape: "arrowDown",
-            text: m.title.slice(0, 12),
+            text: markerShortLabel(m, t),
           }))
         );
+
+        // 날짜별로 뉴스 Marker를 모아두고, crosshair(마우스오버)가 그 날짜 위에 오면
+        // 해당 날짜의 전체 뉴스 제목을 Tooltip으로 띄운다 - Marker 자체에는 압축된
+        // 한 단어 라벨만 남기고, 전체 정보는 hover로만 노출해 차트가 지저분해지지 않게 한다.
+        const markersByTime = new Map<string, EventMarker[]>();
+        for (const m of data.event_markers) {
+          const key = timeToDateKey(m.date);
+          if (!key) continue;
+          const arr = markersByTime.get(key);
+          if (arr) arr.push(m);
+          else markersByTime.set(key, [m]);
+        }
+
+        chart.subscribeCrosshairMove((param) => {
+          const key = param.time ? timeToDateKey(param.time) : null;
+          if (!key || !param.point) {
+            setHoverTooltip(null);
+            return;
+          }
+          const markers = markersByTime.get(key);
+          if (!markers || markers.length === 0) {
+            setHoverTooltip(null);
+            return;
+          }
+          setHoverTooltip({ x: param.point.x, y: param.point.y, markers });
+        });
       }
 
       // 5Y/MAX처럼 데이터 구간이 길어져도 항상 전체 구간이 한 번에 보이도록 명시적으로 fit한다.
@@ -110,7 +161,9 @@ export function PriceChart({ ticker }: { ticker: string }) {
     return () => {
       resizeObserver?.disconnect();
       chart?.remove();
+      setHoverTooltip(null);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, period]);
 
   return (
@@ -129,7 +182,32 @@ export function PriceChart({ ticker }: { ticker: string }) {
         ))}
       </div>
       {error && <p className="text-sm text-negative">{t("common.error")}</p>}
-      <div ref={containerRef} className="w-full" />
+      <div className="relative w-full">
+        <div ref={containerRef} className="w-full" />
+        {hoverTooltip && (
+          <div
+            className="pointer-events-none absolute z-10 max-w-[260px] rounded border border-gray-200 bg-white p-2 text-xs shadow-lg"
+            style={{
+              left: Math.min(
+                hoverTooltip.x + 12,
+                Math.max((containerRef.current?.clientWidth ?? 0) - 260 - 8, 0)
+              ),
+              top: Math.max(hoverTooltip.y - 8, 0),
+            }}
+          >
+            {hoverTooltip.markers.map((m) => (
+              <div key={m.news_id} className="mb-1 last:mb-0">
+                {m.event_type && (
+                  <span className="mr-1 rounded bg-surface px-1 text-[10px] text-gray-500">
+                    {t(`eventTypes.${m.event_type}`, m.event_type)}
+                  </span>
+                )}
+                <span className="text-gray-700">{m.title}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

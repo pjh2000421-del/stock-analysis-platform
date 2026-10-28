@@ -82,18 +82,60 @@ def _analyze_and_extract(title: str, summary: str | None) -> dict:
     return {"sentiment": sentiment_result, "event": extracted}
 
 
-def _compute_importance(sentiment_compound: float | None, event_type: str) -> float:
+# 시가총액을 모를 때(Lazy Loading으로 아직 조회 전 등)도 최소한의 판단이 가능하도록 쓰는
+# 절대금액 기준선 - 1000억원 이상이면 시총 정보 없이도 "규모가 크다"고 본다.
+_LARGE_ABSOLUTE_AMOUNT_KRW = 100_000_000_000.0
+
+
+def _compute_importance(
+    sentiment_compound: float | None,
+    event_type: str,
+    *,
+    amount_nominal: float | None = None,
+    market_cap: float | None = None,
+    dart_confirmed: bool = False,
+    is_corroborated: bool = False,
+) -> float:
     """
-    뉴스 중요도(0~100) 1차 근사치 (요구사항 49).
-    Phase1에서는 |sentiment| 강도와 Event Type 가중치만 반영하는 단순 baseline이며,
-    Phase2 이후 기업규모 대비 Event 규모/공시 여부/보도량/Market Reaction 등을 반영해 고도화한다.
+    뉴스 중요도(0~100) 추정치 (요구사항 49).
+
+    Phase1 baseline(|sentiment| 강도 + Event Type 가중치)에 이어, "실제로 기업에 얼마나
+    영향을 주는 사건인가"를 근사하기 위해 아래 신호를 추가로 반영한다:
+      - amount_nominal: 기사에서 추출된 계약/투자 금액(원). 시가총액 대비 비율이 클수록
+        가점을 크게 주고, 시가총액을 모르면 훨씬 보수적인 절대금액 기준(1000억원)만 쓴다.
+        금액을 추출하지 못하면(정규식 미매치) 가점 없이 0으로 둔다 - 숫자를 추측하지 않는다
+        (요구사항 74).
+      - dart_confirmed: OpenDART 공시로 실제 확인된 사건인지.
+      - is_corroborated: 다른 언론사도 같은 사건을 보도했는지(Event Cluster의 2번째 이상
+        기사인지) - 여러 매체가 동시에 다룬 사건일수록 시장에 미치는 영향이 클 가능성이 높다.
+
+    기업규모 대비 보도량/실제 Market Reaction(주가 반응) 반영은 Phase2 이후 과제로 남긴다.
     """
     base = 30.0
     if sentiment_compound is not None:
         base += min(abs(sentiment_compound) * 30, 30)
+
     high_importance_types = {"M_AND_A", "EARNINGS", "SUPPLY_CONTRACT", "REGULATION", "CAPITAL_INCREASE"}
     if event_type in high_importance_types:
         base += 20
+
+    if amount_nominal is not None and amount_nominal > 0:
+        if market_cap and market_cap > 0:
+            ratio = amount_nominal / market_cap
+            if ratio >= 0.10:
+                base += 25.0
+            elif ratio >= 0.03:
+                base += 15.0
+            elif ratio >= 0.01:
+                base += 7.0
+        elif amount_nominal >= _LARGE_ABSOLUTE_AMOUNT_KRW:
+            base += 10.0
+
+    if dart_confirmed:
+        base += 10.0
+    if is_corroborated:
+        base += 5.0
+
     return min(base, 100.0)
 
 
@@ -237,9 +279,21 @@ def refresh_company_news(db: Session, company: Company, display: int = 30) -> di
         analysis = _analyze_and_extract(item.title, item.summary)
         sentiment = analysis["sentiment"]
         extracted = analysis["event"]
-        importance = _compute_importance(sentiment["compound"], extracted.event_type)
 
+        # importance 계산에 "다른 언론사도 같은 사건을 다뤘는지"/"DART 공시로 확인됐는지"를
+        # 반영하기 위해, 두 조회를 importance 계산보다 먼저 수행한다(기존에는 dart_anchor를
+        # News/NewsEvent 저장 시점에만 부가정보로 쓰고 importance에는 반영하지 않았다).
         cluster_head_id = _find_cluster_head(db, company, item.title, item.published_at)
+        dart_anchor_rcept_no = _find_dart_anchor(company, extracted.event_type, item.published_at)
+
+        importance = _compute_importance(
+            sentiment["compound"],
+            extracted.event_type,
+            amount_nominal=extracted.amount_nominal,
+            market_cap=company.market_cap,
+            dart_confirmed=dart_anchor_rcept_no is not None,
+            is_corroborated=cluster_head_id is not None,
+        )
 
         news_row = News(
             company_id=company.id,
@@ -263,7 +317,7 @@ def refresh_company_news(db: Session, company: Company, display: int = 30) -> di
         db.add(news_row)
         db.flush()  # news_row.id 확보 (이후 같은 배치의 유사도 비교 대상에도 포함시키기 위함)
 
-        dart_anchor_rcept_no = _find_dart_anchor(company, extracted.event_type, item.published_at)
+        # dart_anchor_rcept_no는 위에서 importance 계산 전에 이미 조회해뒀다(중복 조회 방지).
 
         # 물가조정 금액(amount_real, 요구사항 13): 기사에서 금액이 추출됐고 발행일을 알 때만
         # 계산한다. "오늘 기준 실질금액"으로 환산한다(base_date=오늘) - 몇 년 전 계약 금액이

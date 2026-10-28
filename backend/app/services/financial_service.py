@@ -14,16 +14,23 @@ from datetime import date, datetime, timedelta
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.config import get_settings
 from app.core.logging import get_logger
 from app.models.company import Company
 from app.models.financial import FinancialMetric, FinancialStatement
 from app.models.price import DailyPrice
 from app.providers.financial_provider import get_financial_provider
+from app.services.beta_service import compute_company_beta
 from app.valuation import metrics as calc
+from app.valuation.wacc import estimate_wacc
 
 logger = get_logger(__name__)
 
 FINANCIALS_REFRESH_INTERVAL = timedelta(days=1)
+
+# ROIC(NOPAT 산출)/WACC 계산에 쓰는 법인세율 가정. 기업별 실효세율 데이터가 아직 연동되어
+# 있지 않아 app/schemas/dcf.py의 DCFAssumptions 기본 tax_rate(0.22)와 동일한 값을 사용한다.
+ASSUMED_TAX_RATE = 0.22
 
 
 def refresh_financial_statements(db: Session, company: Company) -> str:
@@ -177,6 +184,31 @@ def compute_and_store_financial_metrics(db: Session, company: Company) -> Financ
         net_debt_calc.value, ebitda_calc.value, ebitda_calc.is_estimated
     )
 
+    # Capital Cost (ROIC/WACC) - 이전에는 계산 로직 자체가 없어 항상 N/A였다.
+    nopat = None
+    if latest and latest.operating_income is not None:
+        nopat = latest.operating_income * (1 - ASSUMED_TAX_RATE)
+    invested_capital = None
+    if latest and latest.equity is not None and net_debt_calc.value is not None:
+        invested_capital = latest.equity + net_debt_calc.value
+    roic_calc = calc.roic(nopat, invested_capital)
+
+    settings = get_settings()
+    beta = compute_company_beta(db, company)
+    wacc_result = estimate_wacc(
+        market_cap=market_cap,
+        total_borrowings=latest.total_borrowings if latest else None,
+        interest_expense=latest.interest_expense if latest else None,
+        tax_rate=ASSUMED_TAX_RATE,
+        beta=beta,
+        risk_free_rate=settings.risk_free_rate,
+        equity_risk_premium=settings.equity_risk_premium,
+    )
+    # roic_calc.value는 이미 %(percent) 단위로 계산되므로(app/valuation/metrics.py의 roic()
+    # 참고), wacc도 같은 % 단위로 맞춰야 "ROIC - WACC"가 의미를 갖는다.
+    wacc_pct = wacc_result.wacc * 100
+    roic_minus_wacc_value = (roic_calc.value - wacc_pct) if roic_calc.value is not None else None
+
     metric = FinancialMetric(
         company_id=company.id,
         date=date.today(),
@@ -200,6 +232,9 @@ def compute_and_store_financial_metrics(db: Session, company: Company) -> Financ
         quick_ratio=quick_ratio_calc.value,
         interest_coverage=interest_coverage_calc.value,
         revenue_growth_yoy=revenue_growth_calc.value,
+        roic=roic_calc.value,
+        wacc=wacc_pct,
+        roic_minus_wacc=roic_minus_wacc_value,
         source_name="직접 계산 (OpenDART + 시장가)",
         calculation_method="per=Price/EPS, pbr=Price/BPS, roe=NetIncome/AvgEquity 등 (app/valuation/metrics.py 참조)",
         retrieved_at=datetime.utcnow(),

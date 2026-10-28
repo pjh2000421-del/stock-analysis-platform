@@ -26,7 +26,7 @@ export function ScoreCard({ score }: { score: CompositeScoreResponse | null }) {
   return (
     <div className="rounded border border-gray-200 bg-white p-4">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="font-semibold text-brand">종합 점수</h3>
+        <h3 className="font-semibold text-brand">{t("common.compositeScore")}</h3>
         <span className="text-xs text-gray-400">{score ? `weights v${score.weights_config_version}` : " "}</span>
       </div>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
@@ -45,7 +45,7 @@ export function ScoreCard({ score }: { score: CompositeScoreResponse | null }) {
       {!score && <p className="mt-3 text-sm text-gray-400">{t("common.loading")}</p>}
       {score && score.total_score !== null && (
         <p className="mt-3 text-sm text-gray-500">
-          종합 점수: <span className="font-semibold">{score.total_score} / 100</span>
+          {t("common.compositeScore")}: <span className="font-semibold">{score.total_score} / 100</span>
         </p>
       )}
     </div>

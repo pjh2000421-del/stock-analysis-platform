@@ -197,7 +197,7 @@ export default function AnalysisLabPage() {
         disabled={!ticker || loading}
         className="rounded bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-light disabled:opacity-50"
       >
-        {loading ? "..." : t("analysisLabPage.run")}
+        {loading ? t("common.loading") : t("analysisLabPage.run")}
       </button>
 
       {error && <p className="text-sm text-negative">{error}</p>}
@@ -209,11 +209,13 @@ export default function AnalysisLabPage() {
           </p>
 
           {jobResult.error_message && (
-            <p className="text-sm text-gray-500">참고: {jobResult.error_message}</p>
+            <p className="text-sm text-gray-500">
+              {t("analysisLabPage.note")}: {jobResult.error_message}
+            </p>
           )}
 
           {jobResult.results.length === 0 && jobResult.status === "failed" && (
-            <p className="text-sm text-negative">분석에 실패했습니다. 위 참고 메시지를 확인해주세요.</p>
+            <p className="text-sm text-negative">{t("analysisLabPage.failedMessage")}</p>
           )}
 
           {jobResult.results.map((r) => {
@@ -224,22 +226,22 @@ export default function AnalysisLabPage() {
               : null;
             const predictionText =
               r.prediction.value !== undefined
-                ? `예측값: ${formatNumber(r.prediction.value)}`
-                : `방향: ${r.prediction.direction}${
+                ? `${t("analysisLabPage.predictedValue")}: ${formatNumber(r.prediction.value)}`
+                : `${t("analysisLabPage.direction")}: ${r.prediction.direction}${
                     r.prediction.probability_up !== undefined
-                      ? ` (상승 확률 ${formatNumber(r.prediction.probability_up, 2)})`
+                      ? ` (${t("analysisLabPage.probabilityUp")} ${formatNumber(r.prediction.probability_up, 2)})`
                       : ""
                   }`;
 
             return (
               <div key={r.model} className="rounded border border-gray-100 bg-surface p-3">
                 <p className="text-sm font-medium text-gray-700">
-                  {r.model} · 신뢰도 {r.confidence ?? "-"}
+                  {r.model} · {t("analysisLabPage.confidence")} {r.confidence ?? "-"}
                 </p>
                 <p className="mt-1 text-sm text-gray-600">{predictionText}</p>
                 {r.prediction_interval && (
                   <p className="text-xs text-gray-500">
-                    예측 구간: {formatNumber(r.prediction_interval.lower)} ~{" "}
+                    {t("analysisLabPage.predictionInterval")}: {formatNumber(r.prediction_interval.lower)} ~{" "}
                     {formatNumber(r.prediction_interval.upper)}
                   </p>
                 )}
@@ -250,10 +252,11 @@ export default function AnalysisLabPage() {
                       m.mae !== null && `MAE ${formatNumber(m.mae)}`,
                       m.rmse !== null && `RMSE ${formatNumber(m.rmse)}`,
                       m.r2 !== null && `R² ${formatNumber(m.r2)}`,
-                      m.directional_accuracy !== null && `방향 적중률 ${formatNumber(m.directional_accuracy, 2)}`,
-                      m.accuracy !== null && `정확도 ${formatNumber(m.accuracy, 2)}`,
-                      m.precision !== null && `정밀도 ${formatNumber(m.precision, 2)}`,
-                      m.recall !== null && `재현율 ${formatNumber(m.recall, 2)}`,
+                      m.directional_accuracy !== null &&
+                        `${t("analysisLabPage.directionalAccuracy")} ${formatNumber(m.directional_accuracy, 2)}`,
+                      m.accuracy !== null && `${t("analysisLabPage.accuracy")} ${formatNumber(m.accuracy, 2)}`,
+                      m.precision !== null && `${t("analysisLabPage.precisionMetric")} ${formatNumber(m.precision, 2)}`,
+                      m.recall !== null && `${t("analysisLabPage.recall")} ${formatNumber(m.recall, 2)}`,
                       m.f1 !== null && `F1 ${formatNumber(m.f1, 2)}`,
                       m.roc_auc !== null && `ROC-AUC ${formatNumber(m.roc_auc, 2)}`,
                     ].filter(Boolean);
@@ -263,7 +266,8 @@ export default function AnalysisLabPage() {
                   })()}
                 {topFeatures && (
                   <p className="mt-1 text-xs text-gray-400">
-                    주요 Feature: {topFeatures.map(([name, v]) => `${name}(${formatNumber(v, 2)})`).join(", ")}
+                    {t("analysisLabPage.topFeatures")}:{" "}
+                    {topFeatures.map(([name, v]) => `${name}(${formatNumber(v, 2)})`).join(", ")}
                   </p>
                 )}
               </div>

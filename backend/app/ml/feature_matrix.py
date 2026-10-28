@@ -7,13 +7,17 @@ AnalysisConfig(요구사항 40, 41)에서 사용자가 고른 기업/기간/Feat
 
 MVP 범위(요구사항 74 - 숫자를 함부로 만들지 않는다는 원칙에 따라, 아직 제대로 만들 수
 없는 Feature는 조용히 0으로 채우지 않고 명시적으로 건너뛰고 알려준다):
-    지원: price, volume, news_sentiment, news_frequency, event_type
-    미지원(다음 단계): historical_similarity, valuation, fundamental, market_index,
-        fx_rate, interest_rate, volatility
+    지원: price, volume, news_sentiment, news_frequency, event_type, market_index, fx_rate
+    미지원(다음 단계): historical_similarity, valuation, fundamental, interest_rate
     - valuation/fundamental은 "그 시점에 실제로 알 수 있었던 값"만 써야 하는
       Point-in-Time 정합성(요구사항 30, 63) 검증이 필요해 MVP에서는 제외한다.
-    - market_index/fx_rate는 macro_provider.py에 이미 있지만, interest_rate는
-      Provider 자체가 아직 없어 함께 다음 단계로 미룬다.
+    - market_index(KOSPI 지수 수익률)/fx_rate(USD/KRW 환율 수익률)는 지수/환율 원자료
+      자체가 사후에 바뀔 일이 없어(재무제표처럼 정정공시 위험이 없음) Point-in-Time 이슈
+      없이 바로 붙일 수 있어 지원한다(macro_provider.py의 FinanceDataReader 기반 조회를
+      재사용). interest_rate(기준금리 등)는 Provider 자체가 아직 없어 다음 단계로 미룬다.
+    - market_index/fx_rate 모두 Provider 실패 시(예: 배포 환경에서 지수 데이터 소스가
+      막히는 경우) 요청했더라도 조용히 넘어가지 않고 skipped_feature_groups에 포함시켜
+      알린다 - 아래 _market_index_daily/_fx_rate_daily 참고.
     - historical_similarity는 계산 비용이 커서(이벤트별 유사도 검색) 이 Feature Matrix
       빌더에 바로 붙이기보다 별도 캐싱 전략이 필요해 다음 단계로 미룬다.
 
@@ -38,6 +42,7 @@ from app.ml.preprocessing import build_price_feature_frame
 from app.models.company import Company
 from app.models.event import NewsEvent
 from app.models.news import News
+from app.providers.macro_provider import get_macro_provider
 from app.schemas.analysis import AnalysisConfig, AnalysisTarget, FeatureGroup
 from app.schemas.common import EventType
 from app.services.price_service import get_prices_in_range
@@ -51,7 +56,12 @@ SUPPORTED_FEATURE_GROUPS: set[FeatureGroup] = {
     FeatureGroup.NEWS_SENTIMENT,
     FeatureGroup.NEWS_FREQUENCY,
     FeatureGroup.EVENT_TYPE,
+    FeatureGroup.MARKET_INDEX,
+    FeatureGroup.FX_RATE,
 }
+
+KOSPI_INDEX_CODE = "KS11"
+USD_KRW_PAIR = "USD/KRW"
 
 # 예측 대상별 "며칠 앞을 볼 것인가" (거래일 기준). UP_DOWN은 다음 거래일 방향을,
 # VOLATILITY는 향후 5거래일 실현 변동성을 예측하도록 정의한다 (스키마에 명시돼 있지
@@ -146,6 +156,50 @@ def _event_type_daily_counts(db: Session, company: Company, config: AnalysisConf
     return counts[all_columns]
 
 
+def _market_index_daily(config: AnalysisConfig, price_index: pd.DatetimeIndex) -> tuple[pd.DataFrame, str | None]:
+    """KOSPI(KS11) 지수의 일별 로그수익률을 price_index(종목 거래일)에 맞춰 반환한다.
+
+    반환: (market_return 컬럼 하나짜리 DataFrame, 실패 시 사유 문자열(성공하면 None)).
+    Provider가 실패해도(예: 배포 서버 IP 이슈) 예외를 던지지 않고 빈 DataFrame + 사유를
+    반환해 호출부가 skipped_feature_groups로 명확히 알리도록 한다 (요구사항 74).
+    """
+    macro = get_macro_provider()
+    try:
+        result = macro.get_market_index(KOSPI_INDEX_CODE, config.start_date, config.end_date)
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("KOSPI 지수 조회 실패")
+        return pd.DataFrame(columns=["market_return"]), f"KOSPI 지수 조회 중 오류: {exc}"
+
+    if result.status != "ok" or result.data is None or getattr(result.data, "empty", True):
+        return pd.DataFrame(columns=["market_return"]), (result.message or "KOSPI 지수 데이터를 가져오지 못했습니다.")
+
+    df = result.data.copy()
+    close_col = "Close" if "Close" in df.columns else df.columns[0]
+    df.index = pd.to_datetime(df.index)
+    market_return = np.log(df[close_col] / df[close_col].shift(1)).rename("market_return")
+    return market_return.reindex(price_index).to_frame(), None
+
+
+def _fx_rate_daily(config: AnalysisConfig, price_index: pd.DatetimeIndex) -> tuple[pd.DataFrame, str | None]:
+    """USD/KRW 환율의 일별 로그수익률을 price_index(종목 거래일)에 맞춰 반환한다.
+    실패 처리 원칙은 _market_index_daily와 동일하다."""
+    macro = get_macro_provider()
+    try:
+        result = macro.get_fx_rate(USD_KRW_PAIR, config.start_date, config.end_date)
+    except Exception as exc:  # noqa: BLE001
+        logger.exception("USD/KRW 환율 조회 실패")
+        return pd.DataFrame(columns=["fx_return"]), f"USD/KRW 환율 조회 중 오류: {exc}"
+
+    if result.status != "ok" or result.data is None or getattr(result.data, "empty", True):
+        return pd.DataFrame(columns=["fx_return"]), (result.message or "USD/KRW 환율 데이터를 가져오지 못했습니다.")
+
+    df = result.data.copy()
+    close_col = "Close" if "Close" in df.columns else df.columns[0]
+    df.index = pd.to_datetime(df.index)
+    fx_return = np.log(df[close_col] / df[close_col].shift(1)).rename("fx_return")
+    return fx_return.reindex(price_index).to_frame(), None
+
+
 def _compute_target(price_df: pd.DataFrame, target: AnalysisTarget) -> tuple[pd.Series, str]:
     """price_df(다음: close, log_return 컬럼 포함)로부터 target Series와 task_type을 계산한다."""
     if target in _REGRESSION_HORIZON_DAYS:
@@ -181,7 +235,8 @@ def build_feature_matrix(db: Session, company: Company, config: AnalysisConfig) 
         raise AnalysisDataError(
             "선택한 Feature 그룹 중 현재 지원되는 것이 없습니다 "
             f"(선택: {sorted(g.value for g in requested)}). "
-            "price/volume/news_sentiment/news_frequency/event_type 중 하나 이상을 선택해주세요."
+            "price/volume/news_sentiment/news_frequency/event_type/market_index/fx_rate 중 "
+            "하나 이상을 선택해주세요."
         )
 
     pieces: list[pd.DataFrame] = []
@@ -210,6 +265,34 @@ def build_feature_matrix(db: Session, company: Company, config: AnalysisConfig) 
         event_df = event_df.reindex(price_df.index).fillna(0.0)
         pieces.append(event_df)
         base_columns.extend(list(event_df.columns))
+
+    # market_index/fx_rate는 지수/환율 원자료 자체가 사후 정정될 일이 없어 Point-in-Time
+    # 이슈 없이 바로 쓸 수 있지만, 조회 시점에 Provider가 실패할 수 있다(요구사항 74 -
+    # 요청했는데 조용히 빠지는 일이 없도록 skipped에 사유와 함께 기록한다).
+    if FeatureGroup.MARKET_INDEX in supported_requested:
+        market_df, market_error = _market_index_daily(config, price_df.index)
+        if market_error:
+            skipped.append(f"market_index (사유: {market_error})")
+        else:
+            filled = market_df.fillna(0.0)
+            pieces.append(filled)
+            base_columns.extend(list(filled.columns))
+    if FeatureGroup.FX_RATE in supported_requested:
+        fx_df, fx_error = _fx_rate_daily(config, price_df.index)
+        if fx_error:
+            skipped.append(f"fx_rate (사유: {fx_error})")
+        else:
+            filled = fx_df.fillna(0.0)
+            pieces.append(filled)
+            base_columns.extend(list(filled.columns))
+
+    if not pieces:
+        # market_index/fx_rate처럼 "지원은 하지만 실행 시점에 Provider가 실패할 수 있는"
+        # Feature 그룹만 요청했는데 전부 실패한 경우 - 위의 supported_requested 체크는
+        # 요청 시점에는 "지원 목록에 있다"만 확인하므로 여기서 다시 한번 막아야 한다.
+        raise AnalysisDataError(
+            "요청한 Feature 그룹을 모두 가져오지 못했습니다: " + "; ".join(skipped)
+        )
 
     raw_features = pd.concat(pieces, axis=1)
 

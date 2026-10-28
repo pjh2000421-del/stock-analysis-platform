@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useTranslation } from "@/lib/i18n/I18nProvider";
 import { formatKrwAmount, formatPercent } from "@/lib/format";
@@ -38,9 +38,42 @@ export function DCFCalculator({ ticker }: { ticker: string }) {
   const [result, setResult] = useState<DCFResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [waccNote, setWaccNote] = useState<string | null>(null);
+  const [suggestedWaccLoading, setSuggestedWaccLoading] = useState(true);
+
+  // 종목별 제안 WACC(베타 기반 CAPM 추정치)을 불러와 초기값으로 미리 채운다.
+  // 사용자가 이미 값을 직접 수정한 뒤라도 다시 덮어쓰지 않도록, ticker가 바뀔 때만 실행한다.
+  useEffect(() => {
+    let cancelled = false;
+    setSuggestedWaccLoading(true);
+    setWaccNote(null);
+    setAssumptions(DEFAULT_ASSUMPTIONS);
+
+    api
+      .getSuggestedDcfAssumptions(ticker)
+      .then((res) => {
+        if (cancelled) return;
+        setAssumptions((prev) => ({ ...prev, wacc: res.assumptions.wacc }));
+        setWaccNote(t("dcfPage.suggestedWaccApplied"));
+      })
+      .catch(() => {
+        // 제안 WACC 조회 실패 시에도 DCF Calculator 자체는 기본값으로 계속 쓸 수 있어야 한다
+        // (요구사항: Provider Fallback 원칙 - 보조 기능 실패가 핵심 기능을 막으면 안 됨).
+        if (!cancelled) setWaccNote(null);
+      })
+      .finally(() => {
+        if (!cancelled) setSuggestedWaccLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ticker]);
 
   function updateField(key: NumericField, value: number) {
     setAssumptions((prev) => ({ ...prev, [key]: value }));
+    if (key === "wacc") setWaccNote(null); // 사용자가 직접 수정하면 "자동 추정" 안내는 지운다
   }
 
   async function run() {
@@ -77,6 +110,12 @@ export function DCFCalculator({ ticker }: { ticker: string }) {
             </div>
           ))}
         </div>
+        {suggestedWaccLoading && (
+          <p className="mt-2 text-xs text-gray-400">{t("dcfPage.suggestedWaccLoading")}</p>
+        )}
+        {!suggestedWaccLoading && waccNote && (
+          <p className="mt-2 text-xs text-gray-400">{waccNote}</p>
+        )}
         <button
           onClick={run}
           disabled={loading}
@@ -88,7 +127,7 @@ export function DCFCalculator({ ticker }: { ticker: string }) {
       </div>
 
       <div className="rounded border border-gray-200 bg-white p-4">
-        <h3 className="mb-3 font-semibold text-brand">결과</h3>
+        <h3 className="mb-3 font-semibold text-brand">{t("dcfPage.result")}</h3>
         {!result && <p className="text-sm text-gray-400">{t("dcfPage.runDcf")}</p>}
         {result && (
           <div className="space-y-2 text-sm">

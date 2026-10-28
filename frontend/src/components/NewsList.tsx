@@ -35,7 +35,9 @@ function NewsCard({ n }: { n: NewsItem }) {
         <div className="mt-2 flex flex-wrap gap-3 text-xs">
           {sentiment && <span className={sentiment.cls}>{sentiment.text}</span>}
           {n.importance_score !== null && (
-            <span className="text-gray-400">중요도 {Math.round(n.importance_score)}</span>
+            <span className="text-gray-400">
+              {t("common.importanceScore")} {Math.round(n.importance_score)}
+            </span>
           )}
           {n.related_count > 0 && (
             <span className="text-gray-400">
