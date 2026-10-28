@@ -26,8 +26,13 @@ class CompositeScoreResponse(BaseModel):
 
 
 class SimpleLevel(BaseModel):
-    label: str  # 예: "저렴", "보통", "비싼 편"
-    detail: str  # 근거 문장, 단정적 표현 금지
+    label: str  # 예: "저렴", "보통", "비싼 편" (한국어 표시용, 하위호환을 위해 유지)
+    detail: str  # 근거 문장, 단정적 표현 금지 (한국어)
+    # 다국어 표시용: 프론트엔드가 code/detail_code로 locales/*.json의 문구를 찾아 표시한다.
+    # 백엔드가 언어별 문장을 직접 만들지 않으므로 번역은 프론트엔드 한 곳에서만 관리된다.
+    code: str | None = None  # 예: "expensive" | "moderate" | "cheap" | "insufficient_data"
+    detail_code: str | None = None  # 예: "price_level", "news_average"
+    params: dict[str, int | float | str] = {}  # 문구에 끼워 넣을 값 (예: {"count": 20})
 
 
 class SimpleViewResponse(BaseModel):
@@ -41,6 +46,8 @@ class SimpleViewResponse(BaseModel):
     historical_similarity_level: SimpleLevel
     ai_outlook: SimpleLevel
     risk_factors: list[str]
+    # risk_factors와 같은 순서의 코드 (프론트엔드 번역용)
+    risk_factor_codes: list[str] = []
     disclaimer: str = "본 분석은 투자 권유가 아니며 투자 결과를 보장하지 않습니다."
 
 

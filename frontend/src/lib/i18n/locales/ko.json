@@ -110,7 +110,37 @@
     "historicalSimilarity": "과거 유사 사례 반응",
     "aiOutlook": "AI 전망",
     "riskFactors": "주요 위험요인",
-    "whyThisAssessment": "왜 이런 평가인가?"
+    "whyThisAssessment": "왜 이런 평가인가?",
+    "levels": {
+      "expensive": "비싼 편",
+      "moderate": "보통",
+      "cheap": "저렴한 편",
+      "low": "낮음",
+      "high": "높음",
+      "good": "양호",
+      "caution": "주의",
+      "stable": "안정적",
+      "positive": "긍정적",
+      "negative": "부정적",
+      "neutral": "중립적",
+      "insufficient_data": "데이터 부족",
+      "no_data": "데이터 없음"
+    },
+    "details": {
+      "price_level": "Valuation 지표(PER/PBR/EV-EBITDA)를 정규화해 산출한 점수 기준이며, 값이 낮을수록(저PER 등) 상대적으로 저렴한 것으로 해석됩니다.",
+      "growth_level": "매출/영업이익 성장률 기반 점수입니다.",
+      "profitability_level": "ROE, 영업이익률, 순이익률 기반 점수입니다.",
+      "financial_health_level": "부채비율, 유동비율, 이자보상배율 기반 점수입니다.",
+      "news_none": "최근 수집된 뉴스 감정 데이터가 없습니다.",
+      "news_average": "최근 뉴스 {count}건의 평균 감정 점수가 {tone}입니다.",
+      "historical_planned": "과거 유사 뉴스 분석 기능은 다음 개발 단계(Phase2)에서 제공될 예정입니다.",
+      "ai_outlook_planned": "AI 미래 예측 기능은 다음 개발 단계(Phase3)에서 제공될 예정입니다."
+    },
+    "risks": {
+      "valuation_burden": "설정된 기준(업종 평균적 관행치) 대비 Valuation 부담이 있는 편입니다. 실제 동종업체와의 비교는 Pro View의 'Peer Comparison' 표를 참고하세요.",
+      "weak_financial_health": "재무 안정성 지표가 상대적으로 취약한 편입니다.",
+      "none_identified": "현재 계산된 지표 기준으로는 두드러진 위험요인이 식별되지 않았습니다."
+    }
   },
   "glossary": {
     "lowLabel": "낮으면",
@@ -281,5 +311,12 @@
     "PRODUCTION": "양산",
     "GUIDANCE": "가이던스",
     "OTHER": "기타"
+  },
+  "loadingGauge": {
+    "initial": "기업 데이터를 불러오는 중입니다…",
+    "firstFetch": "처음 조회하는 기업이라 데이터를 가져오는 데 시간이 조금 더 걸릴 수 있습니다.",
+    "wakingUp": "서버가 대기 상태에서 깨어나는 중일 수 있습니다. 최대 1분 정도 걸릴 수 있습니다.",
+    "elapsed": "{seconds}초",
+    "failed": "기업 데이터를 불러오지 못했습니다. 서버가 아직 시작 중일 수 있으니 다시 시도해 주세요."
   }
 }

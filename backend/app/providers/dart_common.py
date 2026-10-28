@@ -87,3 +87,29 @@ def get_corp_code(ticker: str, api_key: str) -> str | None:
             return None
 
     return mapping.get(ticker)
+
+
+COMPANY_OVERVIEW_ENDPOINT = "https://opendart.fss.or.kr/api/company.json"
+
+
+def fetch_company_overview(ticker: str, api_key: str, timeout: float = 5.0) -> dict | None:
+    """OpenDART 기업개황(company.json)을 조회한다. 영문 회사명(corp_name_eng) 등이 들어 있다.
+
+    네트워크 오류, corp_code 미확인, DART 오류 응답이면 None을 돌려준다.
+    """
+    corp_code = get_corp_code(ticker, api_key)
+    if not corp_code:
+        return None
+    try:
+        resp = httpx.get(
+            COMPANY_OVERVIEW_ENDPOINT, params={"crtfc_key": api_key, "corp_code": corp_code}, timeout=timeout
+        )
+        resp.raise_for_status()
+        payload = resp.json()
+    except Exception as exc:  # noqa: BLE001 - 회사명 조회 실패가 기업 상세 조회를 막으면 안 된다
+        logger.warning("DART 기업개황 조회 실패(%s): %s", ticker, exc)
+        return None
+    if payload.get("status") != "000":
+        logger.info("DART 기업개황 오류 응답(%s): %s", ticker, payload.get("message"))
+        return None
+    return payload

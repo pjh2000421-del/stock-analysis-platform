@@ -22,7 +22,8 @@ const LOCALE_COOKIE = "locale";
 interface I18nContextValue {
   locale: Locale;
   setLocale: (locale: Locale) => void;
-  t: (key: string, fallback?: string) => string;
+  /** vars가 있으면 문구 안의 {name} 자리를 해당 값으로 바꾼다. 예: t("x", undefined, { count: 3 }) */
+  t: (key: string, fallback?: string, vars?: Record<string, string | number>) => string;
 }
 
 const I18nContext = createContext<I18nContextValue | null>(null);
@@ -54,11 +55,14 @@ export function I18nProvider({
   }, []);
 
   const t = useCallback(
-    (key: string, fallback?: string) => {
+    (key: string, fallback?: string, vars?: Record<string, string | number>) => {
       const dict = getDictionary(locale);
       const value = getByPath(dict, key);
-      if (typeof value === "string") return value;
-      return fallback ?? key;
+      const text = typeof value === "string" ? value : fallback ?? key;
+      if (!vars) return text;
+      return text.replace(/\{(\w+)\}/g, (match, name: string) =>
+        name in vars ? String(vars[name]) : match
+      );
     },
     [locale]
   );

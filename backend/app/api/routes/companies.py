@@ -115,6 +115,10 @@ def get_company_detail(ticker: str, db: Session = Depends(get_db)):
     # 투자용 산업분류를 Lazy Loading으로 확보/갱신한다 (요구사항: WICS 우선, 없으면 낮은
     # 신뢰도로만 fallback, 절대 KSIC 원본을 투자용 분류로 그대로 쓰지 않는다).
     ensure_classification(db, company)
+    # English/日本語 화면용 영문 회사명 (없을 때만 DART에서 한 번 조회)
+    company_service.ensure_english_name(db, company)
+    # 시가총액: 최근 종가 x 발행주식수로 갱신 (DB에 이미 있는 값만 사용)
+    financial_service.refresh_market_cap(db, company)
 
     current_price = quote.get("close") if quote else None
     price_change = quote.get("change") if quote else None

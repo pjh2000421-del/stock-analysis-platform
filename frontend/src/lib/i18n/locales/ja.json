@@ -110,7 +110,37 @@
     "historicalSimilarity": "過去の類似事例の反応",
     "aiOutlook": "AI見通し",
     "riskFactors": "主なリスク要因",
-    "whyThisAssessment": "なぜこの評価なのか?"
+    "whyThisAssessment": "なぜこの評価なのか?",
+    "levels": {
+      "expensive": "割高",
+      "moderate": "普通",
+      "cheap": "割安",
+      "low": "低い",
+      "high": "高い",
+      "good": "良好",
+      "caution": "注意",
+      "stable": "安定",
+      "positive": "ポジティブ",
+      "negative": "ネガティブ",
+      "neutral": "中立",
+      "insufficient_data": "データ不足",
+      "no_data": "データなし"
+    },
+    "details": {
+      "price_level": "バリュエーション指標（PER・PBR・EV/EBITDA）を正規化したスコアに基づきます。倍率が低いほど（低PERなど）相対的に割安と解釈されます。",
+      "growth_level": "売上高・営業利益の成長率に基づくスコアです。",
+      "profitability_level": "ROE、営業利益率、純利益率に基づくスコアです。",
+      "financial_health_level": "負債比率、流動比率、インタレスト・カバレッジ・レシオに基づくスコアです。",
+      "news_none": "最近のニュースの感情データはまだ収集されていません。",
+      "news_average": "最近のニュース{count}件の平均感情スコアは{tone}です。",
+      "historical_planned": "過去の類似ニュース分析は、今後の開発段階で提供予定です。",
+      "ai_outlook_planned": "AIによる将来予測は、今後の開発段階で提供予定です。"
+    },
+    "risks": {
+      "valuation_burden": "設定した基準（業種の一般的な水準）と比べてバリュエーションに割高感があります。実際の同業他社との比較は、Pro Viewの「Peer Comparison」表をご覧ください。",
+      "weak_financial_health": "財務安定性の指標が相対的に弱い状態です。",
+      "none_identified": "現在算出されている指標の範囲では、目立ったリスク要因は確認されていません。"
+    }
   },
   "glossary": {
     "lowLabel": "低い場合",
@@ -281,5 +311,12 @@
     "PRODUCTION": "量産",
     "GUIDANCE": "ガイダンス",
     "OTHER": "その他"
+  },
+  "loadingGauge": {
+    "initial": "企業データを読み込んでいます…",
+    "firstFetch": "この企業のデータを初めて取得しているため、少し時間がかかる場合があります。",
+    "wakingUp": "サーバーがスリープから復帰中の可能性があります。最大1分ほどかかることがあります。",
+    "elapsed": "{seconds}秒",
+    "failed": "企業データを読み込めませんでした。サーバーが起動中の可能性があるため、もう一度お試しください。"
   }
 }

@@ -11,7 +11,9 @@ Lazy Loading + Caching 원칙:
 from __future__ import annotations
 
 import json
+import re
 import threading
+import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -22,7 +24,9 @@ from sqlalchemy.orm import Session
 from app.core.errors import NotFoundError
 from app.core.logging import get_logger
 from app.models.company import Company
+from app.core.config import get_settings
 from app.providers.base import CompanyMasterRecord, ProviderResult
+from app.providers.dart_common import fetch_company_overview
 from app.providers.stock_provider import get_stock_provider
 
 logger = get_logger(__name__)
@@ -171,3 +175,60 @@ def refresh_current_quote(db: Session, company: Company) -> dict | None:
     db.add(company)
     db.commit()
     return result.data
+
+
+# --- 영문 회사명 (English / 日本語 화면용) ----------------------------------------------
+
+# 이 단어들은 전부 대문자여도 약어가 아니라 일반 단어이므로 첫 글자만 대문자로 바꾼다.
+_COMMON_WORDS = {"AND", "OF", "THE", "CO", "INC", "LTD", "CORP", "NEW", "ONE", "BIO", "CAR", "OIL", "GAS"}
+_ENGLISH_NAME_RETRY_SECONDS = 10 * 60
+_english_name_failed_at: float | None = None
+
+
+def tidy_english_company_name(raw: str | None) -> str:
+    """DART의 영문 회사명을 화면에 쓰기 좋게 정리한다.
+
+    DART는 "SAMSUNG ELECTRONICS CO,.LTD"처럼 전부 대문자이거나 구두점이 어긋난 값을 주는 경우가
+    많다. 전부 대문자인 이름만 단어별로 첫 글자만 대문자로 바꾸고, 3글자 이하 약어(SK, LG, KB 등)는
+    그대로 둔다. 원래 대소문자가 섞인 이름(예: "NAVER Corporation")은 회사가 정한 표기라서 손대지 않는다.
+    """
+    name = re.sub(r"\s+", " ", (raw or "").strip())
+    if not name:
+        return ""
+    name = re.sub(r"\s*CO\s*[,.]+\s*,?\s*LTD\.?$", " CO., LTD.", name, flags=re.IGNORECASE)
+    if name != name.upper():
+        return name
+
+    def fix(word: str) -> str:
+        letters = re.sub(r"[^A-Z]", "", word)
+        if 0 < len(letters) <= 3 and letters not in _COMMON_WORDS:
+            return word
+        return word[:1] + word[1:].lower()
+
+    return " ".join(fix(w) for w in name.split(" "))
+
+
+def ensure_english_name(db: Session, company: Company) -> None:
+    """영문 회사명이 없으면 OpenDART 기업개황에서 한 번 가져와 저장한다.
+
+    - 이미 조회한 적이 있으면(빈 문자열 포함) 다시 부르지 않는다. 빈 문자열 = DART에 영문명이 없음.
+    - DART_API_KEY가 없으면 아무것도 하지 않는다(나중에 키를 넣으면 그때 채워진다).
+    - DART에 연결하지 못하면 10분 동안은 재시도하지 않아, 상세 페이지가 매번 기다리지 않게 한다.
+    """
+    global _english_name_failed_at
+    if company.company_name_en is not None:
+        return
+    api_key = get_settings().dart_api_key
+    if not api_key:
+        return
+    if _english_name_failed_at is not None and time.time() - _english_name_failed_at < _ENGLISH_NAME_RETRY_SECONDS:
+        return
+
+    payload = fetch_company_overview(company.ticker, api_key)
+    if payload is None:
+        _english_name_failed_at = time.time()
+        return
+    _english_name_failed_at = None
+    company.company_name_en = tidy_english_company_name(payload.get("corp_name_eng"))
+    db.add(company)
+    db.commit()

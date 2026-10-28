@@ -2,6 +2,7 @@
 
 import { useTranslation } from "@/lib/i18n/I18nProvider";
 import { formatKrwAmount, formatKrwLargeAmount, formatNumber, formatPercent } from "@/lib/format";
+import { localizeIndustryName } from "@/lib/industryNames";
 import type { CompanyDetail } from "@/types/api";
 
 /** 기업 상세 상단 요약 (요구사항 6). */
@@ -14,13 +15,25 @@ export function CompanyHeader({ company }: { company: CompanyDetail }) {
   // "N/A"류 안내 문구를 보여주고, KRX 원본(KSIC) 업종을 대신 표시하지 않는다
   // (요구사항: 없는 데이터를 실제 분류인 것처럼 보여주지 않는다).
   const investmentIndustry = company.classification?.industry;
-  const industryLabel = investmentIndustry ?? t("company.classificationPending");
+  const industryLabel = investmentIndustry
+    ? localizeIndustryName(investmentIndustry, locale)
+    : t("company.classificationPending");
+
+  // English/日本語 화면에서는 DART 영문 회사명을 쓰고, 한국어 이름은 작게 함께 보여준다.
+  // 영문명이 아직 없으면(DART 미조회/미등록) 한국어 이름만 보여준다.
+  const englishName = company.company_name_en?.trim();
+  const useEnglishName = locale !== "ko" && !!englishName;
 
   return (
     <div className="border-b border-gray-200 bg-white px-6 py-5">
       <div className="flex flex-wrap items-baseline justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-brand">{company.company_name}</h1>
+          <h1 className="text-2xl font-bold text-brand">
+            {useEnglishName ? englishName : company.company_name}
+            {useEnglishName && (
+              <span className="ml-2 text-base font-normal text-gray-400">{company.company_name}</span>
+            )}
+          </h1>
           <p className="mt-1 text-sm text-gray-400">
             {/* company.sector는 업종이 아니라 시장 소속부(우량기업부 등)라서 표시하지 않는다. */}
             {company.ticker} · {company.market ?? "-"} · {industryLabel}

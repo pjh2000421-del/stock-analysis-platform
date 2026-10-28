@@ -12,6 +12,7 @@ import { SimpleView } from "@/components/SimpleView";
 import { ProView } from "@/components/ProView";
 import { DCFCalculator } from "@/components/DCFCalculator";
 import { AIQAPanel } from "@/components/AIQAPanel";
+import { LoadingGauge } from "@/components/LoadingGauge";
 import type { CompanyDetail, NewsListResponse } from "@/types/api";
 
 type Tab = "simple" | "pro" | "news" | "dcf";
@@ -27,18 +28,23 @@ export default function CompanyDetailPage() {
 
   const [company, setCompany] = useState<CompanyDetail | null>(null);
   const [notFound, setNotFound] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   const [tab, setTab] = useState<Tab>("simple");
   const [news, setNews] = useState<NewsListResponse | null>(null);
   const [inWatchlist, setInWatchlist] = useState(false);
 
   useEffect(() => {
+    setLoadFailed(false);
     api
       .getCompanyDetail(ticker)
       .then(setCompany)
       .catch((e) => {
         if (e instanceof ApiError && e.status === 404) setNotFound(true);
+        // 404 이외의 실패(서버가 깨어나는 중 503, 네트워크 오류 등)는 무한 로딩 대신 재시도 버튼을 보여준다.
+        else setLoadFailed(true);
       });
-  }, [ticker]);
+  }, [ticker, attempt]);
 
   useEffect(() => {
     if (!company) return;
@@ -64,8 +70,22 @@ export default function CompanyDetailPage() {
   if (notFound) {
     return <p className="text-sm text-gray-500">{t("common.noData")}</p>;
   }
+  if (loadFailed) {
+    return (
+      <div className="mx-auto max-w-md py-16 text-center text-sm">
+        <p className="text-gray-600">{t("loadingGauge.failed")}</p>
+        <button
+          type="button"
+          onClick={() => setAttempt((n) => n + 1)}
+          className="mt-4 rounded border border-brand px-4 py-1.5 text-brand hover:bg-brand hover:text-white"
+        >
+          {t("common.retry")}
+        </button>
+      </div>
+    );
+  }
   if (!company) {
-    return <p className="text-sm text-gray-400">{t("common.loading")}</p>;
+    return <LoadingGauge />;
   }
 
   async function toggleWatchlist() {

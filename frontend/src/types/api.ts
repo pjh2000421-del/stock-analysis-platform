@@ -143,8 +143,12 @@ export interface CompositeScoreResponse {
 }
 
 export interface SimpleLevel {
-  label: string;
-  detail: string;
+  label: string; // 한국어 라벨 (code가 없을 때의 대체 표시용)
+  detail: string; // 한국어 근거 문장 (detail_code가 없을 때의 대체 표시용)
+  // 다국어 표시용 코드: locales/*.json의 simpleView.levels / simpleView.details에서 문구를 찾는다.
+  code?: string | null;
+  detail_code?: string | null;
+  params?: Record<string, string | number>;
 }
 
 export interface PeerComparisonRow {
@@ -179,6 +183,7 @@ export interface SimpleViewResponse {
   historical_similarity_level: SimpleLevel;
   ai_outlook: SimpleLevel;
   risk_factors: string[];
+  risk_factor_codes?: string[]; // risk_factors와 같은 순서 (simpleView.risks 번역 키)
   disclaimer: string;
 }
 

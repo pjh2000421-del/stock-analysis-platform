@@ -113,6 +113,33 @@ def get_latest_close_price(db: Session, company: Company) -> float | None:
     return row[0] if row else None
 
 
+def refresh_market_cap(db: Session, company: Company) -> float | None:
+    """시가총액 = 최근 종가 x 최근 발행주식수 (이미 DB에 저장된 값만 사용, 외부 호출 없음).
+
+    시가총액은 원래 KRX 상장종목 목록에서만 채워졌다. 그런데 KRX 목록이 막혀 다른 목록
+    (KRX-DESC, DART 고유번호, 정적 목록)으로 대체되면 시가총액이 없어서, 화면의 시가총액과
+    PSR/EV/WACC/동종업계 비교가 모두 N/A가 됐다. 계산할 재료가 있으면 직접 계산해 저장한다.
+    재료가 없으면 기존 값을 그대로 둔다.
+    """
+    price = get_latest_close_price(db, company)
+    shares = db.execute(
+        select(FinancialStatement.shares_outstanding)
+        .where(
+            FinancialStatement.company_id == company.id,
+            FinancialStatement.shares_outstanding.is_not(None),
+        )
+        .order_by(FinancialStatement.period.desc())
+        .limit(1)
+    ).scalar()
+    if price and shares:
+        value = float(price) * float(shares)
+        if company.market_cap != value:
+            company.market_cap = value
+            db.add(company)
+            db.commit()
+    return company.market_cap
+
+
 def compute_and_store_financial_metrics(db: Session, company: Company) -> FinancialMetric:
     """최신 재무제표 + 현재가를 이용해 재무지표를 직접 계산하고 오늘 날짜로 저장한다."""
     statements = get_financial_statements(db, company)
@@ -120,7 +147,7 @@ def compute_and_store_financial_metrics(db: Session, company: Company) -> Financ
     prev = statements[1] if len(statements) > 1 else None
 
     price = get_latest_close_price(db, company)
-    market_cap = company.market_cap
+    market_cap = refresh_market_cap(db, company)
 
     eps_calc = calc.eps(latest.net_income if latest else None, latest.shares_outstanding if latest else None)
     bps_calc = calc.bps(latest.equity if latest else None, latest.shares_outstanding if latest else None)

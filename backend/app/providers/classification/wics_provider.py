@@ -70,22 +70,43 @@ _PROBE_SEC_CD = "G45"
 # 주말(최대 2일) + 연휴가 겹치는 경우(예: 추석 연휴)까지 감안해 여유 있게 잡는다.
 _MAX_TRADING_DATE_LOOKBACK_DAYS = 10
 
+# 요청 하나당 최대 대기 시간. 예전에는 10초였는데, 사이트가 느리거나 막힌 환경(예: 해외 서버)에서
+# 10초 x 재시도 횟수만큼 기업 상세 페이지 전체가 멈췄다. 정상 응답은 보통 1초 안에 온다.
+_REQUEST_TIMEOUT_SECONDS = 5.0
+# 사이트에 연결하지 못했을 때, 이 시간 동안은 다시 시도하지 않고 바로 unavailable을 돌려준다.
+# (실패할 때마다 매 요청이 다시 몇십 초씩 기다리는 것을 막기 위함)
+_FAILURE_BACKOFF_SECONDS = 30 * 60
+# wiseindex.com은 연속 요청 시 요청 간 약간의 간격을 두는 것이 권장된다.
+_REQUEST_INTERVAL_SECONDS = 0.6
+
 
 class WicsClassificationProvider(ClassificationProvider):
+    """WICS 분류 조회.
+
+    예전에는 첫 조회 때 대분류 10개 + 소분류 전부를 한 번에 내려받아 지도를 만들었다.
+    그래서 서버가 막 켜진 직후의 첫 기업 상세 조회가 수십 초씩 걸렸다. 지금은 필요한 만큼만
+    가져온다: 이미 받아둔 대분류부터 확인하고, 없으면 남은 대분류를 하나씩 받다가 종목을
+    찾는 즉시 멈춘다. 소분류도 찾은 대분류에 속한 코드만 확인한다. 받아둔 목록은 코드별로
+    캐시해 다음 종목 조회에 재사용한다.
+    """
+
     name = "wics_wiseindex"
 
     def __init__(self) -> None:
-        self._sector_map: dict[str, str] | None = None
-        self._sub_industry_map: dict[str, str] | None = None
-        self._cached_at: float = 0.0
+        self._trading_date: str | None = None
+        self._trading_date_at: float = 0.0
+        # {지수 코드: (구성종목 코드 집합, 받아온 시각)}
+        self._members: dict[str, tuple[set[str], float]] = {}
+        self._failed_at: float | None = None
         self.last_error: str | None = None
 
     def _fetch_components(self, sec_cd: str, dt: str) -> list[dict] | None:
+        """지수 구성종목을 가져온다. 네트워크/HTTP 오류면 None, 정상 응답이면 리스트(빈 리스트 가능)."""
         try:
             resp = httpx.get(
                 COMPONENTS_ENDPOINT,
                 params={"ceil_yn": 0, "dt": dt, "sec_cd": sec_cd},
-                timeout=10.0,
+                timeout=_REQUEST_TIMEOUT_SECONDS,
                 headers={
                     "User-Agent": (
                         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -104,6 +125,17 @@ class WicsClassificationProvider(ClassificationProvider):
             return None
         return payload.get("list") or []
 
+    def _remember(self, sec_cd: str, items: list[dict]) -> set[str]:
+        members = {item["CMP_CD"] for item in items if item.get("CMP_CD")}
+        self._members[sec_cd] = (members, time.time())
+        return members
+
+    def _cached_members(self, sec_cd: str) -> set[str] | None:
+        cached = self._members.get(sec_cd)
+        if cached and time.time() - cached[1] < _CACHE_TTL_SECONDS:
+            return cached[0]
+        return None
+
     def _resolve_trading_date(self) -> str | None:
         """실제 구성종목 데이터가 존재하는 가장 최근 거래일(YYYYMMDD)을 찾는다.
 
@@ -114,18 +146,30 @@ class WicsClassificationProvider(ClassificationProvider):
         SK하이닉스가 WICS에서 조회되지 않는 문제가 발생했었다).
         오늘부터 최대 _MAX_TRADING_DATE_LOOKBACK_DAYS일 전까지 하루씩 거슬러 올라가며,
         토/일요일은 건너뛰고, 실제로 종목이 1개 이상 포함된 응답이 오는 첫 날짜를 사용한다.
+
+        빈 응답(휴장일)일 때만 전날로 넘어간다. 연결 자체가 실패하면(None) 사이트에 닿지
+        못하는 상황이므로 더 거슬러 올라가 봐야 같은 실패만 반복되니 바로 포기한다.
+        probe로 받은 IT(G45) 구성종목은 버리지 않고 캐시해 재사용한다.
         """
+        if self._trading_date and time.time() - self._trading_date_at < _CACHE_TTL_SECONDS:
+            return self._trading_date
+
         candidate = date.today()
         checked = 0
         while checked < _MAX_TRADING_DATE_LOOKBACK_DAYS:
             if candidate.weekday() < 5:  # 0=월요일 ... 4=금요일만 시도(5,6=토,일 스킵)
                 dt = candidate.strftime("%Y%m%d")
                 items = self._fetch_components(_PROBE_SEC_CD, dt)
+                if items is None:
+                    return None
                 if items:
+                    self._trading_date = dt
+                    self._trading_date_at = time.time()
+                    self._remember(_PROBE_SEC_CD, items)
                     return dt
                 checked += 1
                 if checked < _MAX_TRADING_DATE_LOOKBACK_DAYS:
-                    time.sleep(0.6)
+                    time.sleep(_REQUEST_INTERVAL_SECONDS)
             candidate -= timedelta(days=1)
 
         self.last_error = (
@@ -134,79 +178,86 @@ class WicsClassificationProvider(ClassificationProvider):
         logger.warning("WICS(wiseindex.com) 거래일 탐색 실패: %s", self.last_error)
         return None
 
-    def _ensure_maps(self) -> bool:
-        now = time.time()
-        if self._sector_map is not None and now - self._cached_at < _CACHE_TTL_SECONDS:
-            return True
+    def _unavailable(self) -> ProviderResult:
+        return ProviderResult(
+            status="unavailable",
+            source_name=self.name,
+            message=f"wiseindex.com(WICS) 응답을 가져오지 못했습니다: {self.last_error}",
+        )
+
+    def _mark_failed(self) -> ProviderResult:
+        self._failed_at = time.time()
+        return self._unavailable()
+
+    def _find_sector(self, ticker: str, dt: str) -> tuple[str | None, int, int]:
+        """(찾은 대분류 코드, 새로 받으려던 대분류 수, 그중 실패한 수).
+
+        캐시된 대분류부터 확인한 뒤, 나머지를 하나씩 받다가 종목을 찾으면 바로 멈춘다.
+        """
+        uncached: list[str] = []
+        for sec_cd in SECTOR_CODES:
+            members = self._cached_members(sec_cd)
+            if members is None:
+                uncached.append(sec_cd)
+            elif ticker in members:
+                return sec_cd, 0, 0
+
+        fail_count = 0
+        for i, sec_cd in enumerate(uncached):
+            if i > 0:
+                time.sleep(_REQUEST_INTERVAL_SECONDS)
+            items = self._fetch_components(sec_cd, dt)
+            if items is None:
+                fail_count += 1
+                continue
+            if ticker in self._remember(sec_cd, items):
+                return sec_cd, len(uncached), fail_count
+        return None, len(uncached), fail_count
+
+    def _find_sub_industry(self, ticker: str, sector_cd: str, dt: str) -> str | None:
+        for sub_cd, (parent_cd, sub_name) in KNOWN_SUB_INDUSTRY_CODES.items():
+            if parent_cd != sector_cd:
+                continue
+            members = self._cached_members(sub_cd)
+            if members is None:
+                items = self._fetch_components(sub_cd, dt)
+                if items is None:
+                    continue
+                members = self._remember(sub_cd, items)
+            if ticker in members:
+                return sub_name
+        return None
+
+    def get_classification(self, ticker: str) -> ProviderResult:
+        if self._failed_at is not None and time.time() - self._failed_at < _FAILURE_BACKOFF_SECONDS:
+            return self._unavailable()
 
         dt = self._resolve_trading_date()
         if dt is None:
-            return False
+            return self._mark_failed()
 
-        sector_map: dict[str, str] = {}
-        sector_fail_count = 0
-        codes = list(SECTOR_CODES.items())
-        for i, (sec_cd, sector_name) in enumerate(codes):
-            items = self._fetch_components(sec_cd, dt)
-            if items is None:
-                sector_fail_count += 1
-                continue
-            for item in items:
-                cmp_cd = item.get("CMP_CD")
-                if cmp_cd:
-                    sector_map[cmp_cd] = sector_name
-            # wiseindex.com은 연속 요청 시 요청 간 약간의 간격을 두는 것이 권장된다
-            # (과도한 연속 호출로 인한 일시적 차단/누락 방지).
-            if i < len(codes) - 1:
-                time.sleep(0.6)
-
-        if sector_fail_count == len(codes):
+        sector_cd, tried, failed = self._find_sector(ticker, dt)
+        if sector_cd is None and tried and failed == tried:
             logger.warning("WICS(wiseindex.com) 대분류 조회가 전부 실패했습니다 - unavailable로 처리합니다.")
-            return False
-        if sector_fail_count:
-            logger.warning(
-                "WICS(wiseindex.com) 대분류 %d/%d개 조회 실패 - 일부만 반영됩니다.", sector_fail_count, len(codes)
-            )
+            return self._mark_failed()
+        if sector_cd is None and failed:
+            # 일부 대분류를 못 받아서 "목록에 없다"고 단정할 수 없는 경우. 재시도 금지 시간은 두지 않는다.
+            return self._unavailable()
+        self._failed_at = None
 
-        sub_map: dict[str, str] = {}
-        sub_items = list(KNOWN_SUB_INDUSTRY_CODES.items())
-        for i, (sec_cd, (_, sub_name)) in enumerate(sub_items):
-            items = self._fetch_components(sec_cd, dt)
-            if items is None:
-                continue
-            for item in items:
-                cmp_cd = item.get("CMP_CD")
-                if cmp_cd:
-                    sub_map[cmp_cd] = sub_name
-            if i < len(sub_items) - 1:
-                time.sleep(0.6)
-
-        self._sector_map = sector_map
-        self._sub_industry_map = sub_map
-        self._cached_at = now
-        return True
-
-    def get_classification(self, ticker: str) -> ProviderResult:
-        if not self._ensure_maps():
-            return ProviderResult(
-                status="unavailable",
-                source_name=self.name,
-                message=f"wiseindex.com(WICS) 응답을 가져오지 못했습니다: {self.last_error}",
-            )
-
-        sector = (self._sector_map or {}).get(ticker)
-        if sector is None:
+        if sector_cd is None:
+            cached_sectors = sum(1 for c in SECTOR_CODES if self._cached_members(c) is not None)
             return ProviderResult(
                 status="empty",
                 source_name=self.name,
                 message=(
                     "해당 종목이 WICS 대분류 구성종목 목록에 없습니다. "
-                    f"(현재까지 확보된 대분류 종목 수: {len(self._sector_map or {})}건, "
-                    f"소분류 종목 수: {len(self._sub_industry_map or {})}건)"
+                    f"(확인한 대분류: {cached_sectors}/{len(SECTOR_CODES)}개)"
                 ),
             )
 
-        sub_industry_name = (self._sub_industry_map or {}).get(ticker)
+        sector = SECTOR_CODES[sector_cd]
+        sub_industry_name = self._find_sub_industry(ticker, sector_cd, dt)
         record = ClassificationRecord(
             sector=sector,
             industry=sub_industry_name or sector,

@@ -110,7 +110,37 @@
     "historicalSimilarity": "Historical Similar Cases",
     "aiOutlook": "AI Outlook",
     "riskFactors": "Key Risk Factors",
-    "whyThisAssessment": "Why this assessment?"
+    "whyThisAssessment": "Why this assessment?",
+    "levels": {
+      "expensive": "Expensive",
+      "moderate": "Moderate",
+      "cheap": "Cheap",
+      "low": "Low",
+      "high": "High",
+      "good": "Good",
+      "caution": "Caution",
+      "stable": "Stable",
+      "positive": "Positive",
+      "negative": "Negative",
+      "neutral": "Neutral",
+      "insufficient_data": "Insufficient data",
+      "no_data": "No data"
+    },
+    "details": {
+      "price_level": "Based on a score that normalizes valuation metrics (PER, PBR, EV/EBITDA). Lower multiples, such as a low PER, are read as relatively cheaper.",
+      "growth_level": "Score based on revenue and operating profit growth.",
+      "profitability_level": "Score based on ROE, operating margin and net margin.",
+      "financial_health_level": "Score based on debt ratio, current ratio and interest coverage.",
+      "news_none": "No recent news sentiment data has been collected yet.",
+      "news_average": "The average sentiment of the latest {count} news articles is {tone}.",
+      "historical_planned": "Analysis of similar past news is planned for a later development phase.",
+      "ai_outlook_planned": "AI forecasting is planned for a later development phase."
+    },
+    "risks": {
+      "valuation_burden": "Valuation looks demanding against the configured benchmark (typical industry levels). For a comparison with actual peers, see the Peer Comparison table in Pro View.",
+      "weak_financial_health": "Financial stability indicators are relatively weak.",
+      "none_identified": "No notable risk factors were identified from the metrics calculated so far."
+    }
   },
   "glossary": {
     "lowLabel": "If low",
@@ -281,5 +311,12 @@
     "PRODUCTION": "Production",
     "GUIDANCE": "Guidance",
     "OTHER": "News"
+  },
+  "loadingGauge": {
+    "initial": "Loading company data…",
+    "firstFetch": "Fetching this company's data for the first time. This can take a little longer.",
+    "wakingUp": "The server may be waking up from sleep. This can take up to a minute.",
+    "elapsed": "{seconds}s",
+    "failed": "Couldn't load the company data. The server may still be starting up, so please try again."
   }
 }
